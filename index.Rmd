@@ -1,0 +1,9 @@
+
+<br>
+<br>
+
+### Presentaciones
+
+- [Conceptos de diseño](cd/conceptos_diseno.html)
+
+- Regresión logística
