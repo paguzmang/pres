@@ -1,0 +1,2474 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Conceptos sobre Diseño experimental</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Pablo Andrés Guzmán" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/rladies-fonts.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/hygge.css" rel="stylesheet" />
+    <link href="libs/tile-view-0.2.5.9000/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view-0.2.5.9000/tile-view.js"></script>
+    <script type="application/json" id="xaringanExtra-editable-docid">{"id":"x89aeca7717c445580ec90573ffcfa0b","expires":1}</script>
+    <script src="libs/himalaya-1.1.0/himalaya.js"></script>
+    <script src="libs/js-cookie-3.0.0/js.cookie.js"></script>
+    <link href="libs/editable-0.2.5.9000/editable.css" rel="stylesheet" />
+    <script src="libs/editable-0.2.5.9000/editable.js"></script>
+    <script src="libs/clipboard-2.0.6/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard-0.2.5.9000/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard-0.2.5.9000/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Clic para copiar","success":"Copiado","error":"Pulse Ctrl + C para copiar"})</script>
+    <script src="libs/kePrint-0.0.1/kePrint.js"></script>
+    <link href="libs/lightable-0.0.1/lightable.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Conceptos sobre Diseño experimental
+## Curso: Bioestadística 2
+### Pablo Andrés Guzmán
+### Maestría en Ciencias Biológicas  <br><img src="images/logoCESsmall.jpg" width="267" />
+### Mar 2021<br><br>Presione F para pantalla completa<br><a href="https://virtual.ces.edu.co/course/view.php?id=4848&amp;section=1">Clic para regresar al aula virtual</a>
+
+---
+
+
+name: toc
+class: inverse
+
+&lt;style type="text/css"&gt;
+.red { color: red; }
+
+.big { font-size: 250% }
+.large { font-size: 135% }
+.small { font-size: 70% }
+.tiny{font-size: 40%}
+.larget {font-size: 22px; }
+
+.remark-inline-code{
+   background: #F5F5F5; /* lighter */
+  /*  background: #e7e8e2; /* darker */
+    border-radius: 1px;
+  padding: 0.01px;
+}
+
+.remark-slide-number{
+  font-size: 0.7em;
+}
+
+.remark-slide-content {
+  font-size: 22px;
+}
+
+.remark-code {
+  display: block;
+  overflow-x: auto;
+  padding: .5em;
+  color: #333;
+  background: #f8f8f8;
+}
+
+.footer {
+    color: black;
+    position: fixed;
+    top: 95%;
+    left: 0;
+    text-align: center;
+    width: 100%;
+}
+&lt;/style&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+# Tabla de contenido
+
+&lt;br&gt;
+
+- [&lt;h3&gt;Glosorio&lt;/h3&gt;](#glosario)
+
+- [&lt;h3&gt;Dos diseños clásicos: DCA y DBCA&lt;/h3&gt;](#dca-dbca)
+
+- [&lt;h3&gt;Diseño completamento aleatorio (DCA)&lt;/h3&gt;](#dca0)
+
+- [&lt;h3&gt;Diseño en bloques completos al azar (DBCA)&lt;/h3&gt;](#dbca0)
+
+- [&lt;h3&gt;Extensión: Dos o más factores&lt;/h3&gt;](#dosfac0)
+
+
+
+---
+
+name: glosario
+
+# Glosario
+
+.footer[[Regresar al contenido](#toc)]
+---
+
+template: glosario
+
+
+- .orange[Experimento]: Escenario en el cual un investigador impone de forma deliberada un tratamiento a una muestra de "sujetos" para evaluar su respuesta al tratamiento.
+
+--
+
+- .orange[Diseño experimental]: aspectos inherentes a la organización de un experimento (variables respuesta, tratamientos, unidades experimentales, asignación de unidades a tratamientos y replicación). 
+
+--
+
+  .content-box-purple[
+El .orange[Diseño experimental] busca crear condiciones tales que sólo se puedan plantear dos posibles explicaciones para el porqué la respuesta difiere entre los "sujetos": 
+  * el tratamiento causó la diferencia, o
+  * la diferencia sólo se debe a la variación del muestreo aleatorio.
+]
+
+
+---
+
+template: glosario
+
+- .orange[Respuesta]: Variable aleatoria cuya variación interesa estudiar o sobre la cual recaen las hipótesis de interés.
+
+--
+
+- .orange[Factor]: Variable (categórica) cuyos niveles definen los tratamientos o condiciones que se evaluaran para estudiar su efecto sobre la .orange[respuesta].
+
+--
+
+- .orange[Unidad experimental]: Entidad (sujeto, caja de petri, parcela, etc.) que se asigna a un tratamiento.
+
+--
+
+- .orange[Replicación]: Cuando hay más de una unidad experimental asignada a cada tratamiento. Permite estimar el .orange[error experimental].
+
+--
+
+- .orange[Error experimental]: Variación de la respuesta que ocurre entre unidades exp. tratadas de la misma forma (o están en el mismo tratamiento).
+
+--
+
+- .orange[Bloque]: Conjunto de unidades experimentales que tienen una o más características en común.
+
+
+---
+
+name: dca-dbca
+layout: false
+
+# Dos diseños clásicos: DCA y DBCA
+
+&lt;br&gt;
+
+.pull-left[  .full-width[
+.content-box-purple[
+### .orange[Diseño completamente aleatorio (DCA)]
+
+Las unidades experimentales se reparten al azar entre los tratamientos.
+]
+]
+]
+
+--
+
+.pull-right[ .full-width[
+.content-box-purple[
+### .orange[Diseño en bloques completos al azar (DBCA)]
+
+Las unidades experimentales se agrupan en bloques y luego se reparten al azar entre los tratamientos, pero dentro de cada bloque.
+]
+]
+]
+
+.footer[[Regresar al contenido](#toc)]
+
+---
+
+name: dca0
+class: middle inverse right
+count: false
+
+&lt;h1&gt;Diseño&lt;br&gt;completamente&lt;br&gt;aleatorio (DCA)&lt;/h1&gt;
+
+
+.footer[[Regresar al contenido](#toc)]
+
+---
+
+name: dca
+
+# Diseño completamente aleatorio (DCA)
+
+
+.footer[[Regresar al contenido](#toc)]
+
+---
+
+template: dca
+
+&lt;br&gt;
+
+&lt;img src="images/dca.jpeg" width="80%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+template: dca
+
+## Asignación en un DCA
+
+.pull-left[
+
+```r
+library(tidyverse)
+library(randomizr)
+dca &lt;- tibble(
+  ue = 1:12,
+  trat = complete_ra(
+    N = 12, num_arms = 3, 
+    conditions = c('T1', 'T2', 'T3'))
+)
+
+# UE's por trat:
+xtabs(~ trat, data = dca)
+```
+
+```
+#&gt; trat
+#&gt; T1 T2 T3 
+#&gt;  4  4  4
+```
+]
+
+.pull-right[
+
+```r
+dca  # imprimir la tabla
+```
+
+```
+#&gt; # A tibble: 12 x 2
+#&gt;       ue trat 
+#&gt;    &lt;int&gt; &lt;fct&gt;
+#&gt;  1     1 T3   
+#&gt;  2     2 T3   
+#&gt;  3     3 T2   
+#&gt;  4     4 T1   
+#&gt;  5     5 T3   
+#&gt;  6     6 T1   
+#&gt;  7     7 T2   
+#&gt;  8     8 T2   
+#&gt;  9     9 T1   
+#&gt; 10    10 T2   
+#&gt; 11    11 T3   
+#&gt; 12    12 T1
+```
+]
+
+---
+
+template: dca
+layout: true
+
+## Análisis de datos en un DCA 
+
+---
+
+
+
+
+&lt;img src="images/analisis_dca.png" width="50%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+.left-column[
+### Análisis de varianza
+
+]
+
+.right-column[
+$$ H_0: \mu_1 = \mu_2 = \cdots = \mu_p $$
+
+&lt;img src="images/TablaAnova1via.jpg" width="110%" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+name: dbca0
+layout: false
+class: middle inverse right
+count: false
+
+&lt;h1&gt;Diseño en&lt;br&gt;bloques completos&lt;br&gt;al azar (DBCA)&lt;/h1&gt;
+
+.footer[[Regresar al contenido](#toc)]
+---
+
+name: dbca
+
+# Diseño en bloques completos al azar (DBCA)
+
+.footer[[Regresar al contenido](#toc)]
+
+---
+
+template: dbca
+
+&lt;br&gt;
+
+Suponga que se quieren comparar `\(p\)` grupos o tratamientos y se cuenta con un total de `\(pq\)` unidades experimentales. Bajo un .orange[diseño en bloques completos al azar (DBCA)]:
+
+--
+
+- Se conforman .orange[grupos] de unidades experimentales (ue) que tengan al menos una característica en común. Cada grupo formado se llama .orange[bloque] y las características por las cuales se forman los bloques se les llama variables de bloqueo.
+
+--
+
+- Se forman `\(q\)` bloques. En cada bloque se incluyen `\(p\)` unidades experimentales. P.e., si hay `\(pq =12\)` ue y se tienen `\(p = 3\)` tratamientos, entonces el número de bloques debe ser `\(q = 12/p = 4\)`. 
+
+--
+
+- Los `\(p\)` tratamientos se asignan al azar a las unidades .orange[dentro] de cada bloque.
+
+---
+
+template: dbca
+
+&lt;br&gt;
+
+&lt;img src="images/DBCA.jpg" width="70%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+template: dbca
+
+## Asignación en un DBCA
+
+.pull-left[
+
+```r
+library(tidyverse)
+library(randomizr)
+dbca &lt;- tibble(
+  ue = 1:12,
+  bloque = c('B2', 'B4', 'B3', 'B2', 
+             'B1', 'B3', 'B4', 'B2', 
+             'B1', 'B1', 'B4', 'B3'),
+  trat = block_ra(
+    blocks = bloque, num_arms = 3, 
+    conditions = c('T1', 'T2', 'T3'))
+)
+
+# UE's por trat:
+xtabs(~ trat + bloque, data = dbca)
+```
+
+```
+#&gt;     bloque
+#&gt; trat B1 B2 B3 B4
+#&gt;   T1  1  1  1  1
+#&gt;   T2  1  1  1  1
+#&gt;   T3  1  1  1  1
+```
+]
+
+.pull-right[
+
+```r
+ # imprimir la tabla
+arrange(dbca, bloque) 
+```
+
+```
+#&gt; # A tibble: 12 x 3
+#&gt;       ue bloque trat 
+#&gt;    &lt;int&gt; &lt;chr&gt;  &lt;fct&gt;
+#&gt;  1     5 B1     T2   
+#&gt;  2     9 B1     T1   
+#&gt;  3    10 B1     T3   
+#&gt;  4     1 B2     T3   
+#&gt;  5     4 B2     T1   
+#&gt;  6     8 B2     T2   
+#&gt;  7     3 B3     T1   
+#&gt;  8     6 B3     T2   
+#&gt;  9    12 B3     T3   
+#&gt; 10     2 B4     T3   
+#&gt; 11     7 B4     T2   
+#&gt; 12    11 B4     T1
+```
+]
+
+---
+
+template: dbca
+layout: true
+
+## Análisis de datos en DBCA
+
+---
+
+- En términos macro es el mismo que para un DCA.
+
+- En el .orange[DBCA], el término del error o residual se divide en dos: una variación debida a los bloques y otra para el error como tal.
+
+&lt;img src="images/TablaSS_dca_dbca.jpeg" width="65%" style="display: block; margin: auto;" /&gt;
+
+---
+
+.left-column[
+### Análisis de varianza
+
+]
+
+.right-column[
+
+&lt;img src="images/anova_dbca.jpg" width="100%" style="display: block; margin: auto;" /&gt;
+
+
+]
+
+---
+
+template: dbca
+layout: false
+layout: true
+
+## Análisis de datos en DBCA: Ejemplo
+
+---
+
+.pull-left[
+Se compararon `\(p = 3\)` métodos de enseñanza (A, B y C) de uso de un dispositivo prostético a pacientes que lo requieren. 
+
+Dado que se piensa que la tasa de aprendizaje puede verse afectada por la edad de los pacientes, se utilizó la edad como un factor de bloqueo.
+]
+
+
+.pull-right[
+&lt;img src="images/tiempo_edad_metodo.png" width="90%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+Tres pacientes de cada uno de `\(q = 5\)` grupos de edad fueron seleccionados para participar. 
+
+Luego, cada paciente, dentro de cada grupo de edad, fue asignado al azar a uno de los tres métodos.
+
+&lt;br&gt;
+
+
+&lt;img src="images/tiempo_dbca.png" width="110%" style="display: block; margin: auto;" /&gt;
+
+---
+
+&lt;img src="images/tabla_8_3_3_daniel.png" width="55%" style="display: block; margin: auto;" /&gt;
+
+
+```r
+# Se entran los datos
+disp &lt;- tibble(
+  edad   = gl(n = 5, k = 3, 
+              labels = c('&lt;20', '20-29', '30-39', '40-49', '&gt;50')),
+  metodo = gl(n = 3, k = 1, length = 15,  labels = c('A', 'B', 'C')),
+  tiempo = c(7,9,10, 8,9,10, 9,9,12, 10,9,12, 11,12,14)
+)
+```
+
+
+
+---
+
+.pull-left[
+
+```r
+disp  # se imprime la tabla
+```
+
+```
+#&gt; # A tibble: 15 x 3
+#&gt;    edad  metodo tiempo
+#&gt;    &lt;fct&gt; &lt;fct&gt;   &lt;dbl&gt;
+#&gt;  1 &lt;20   A           7
+#&gt;  2 &lt;20   B           9
+#&gt;  3 &lt;20   C          10
+#&gt;  4 20-29 A           8
+#&gt;  5 20-29 B           9
+#&gt;  6 20-29 C          10
+#&gt;  7 30-39 A           9
+#&gt;  8 30-39 B           9
+#&gt;  9 30-39 C          12
+#&gt; 10 40-49 A          10
+#&gt; 11 40-49 B           9
+#&gt; 12 40-49 C          12
+#&gt; 13 &gt;50   A          11
+#&gt; 14 &gt;50   B          12
+#&gt; 15 &gt;50   C          14
+```
+]
+
+.pull-right[
+
+```r
+# Cantidad de UE's por 
+# bloque y trat:
+xtabs(~ metodo + edad, data = disp)
+```
+
+```
+#&gt;       edad
+#&gt; metodo &lt;20 20-29 30-39 40-49 &gt;50
+#&gt;      A   1     1     1     1   1
+#&gt;      B   1     1     1     1   1
+#&gt;      C   1     1     1     1   1
+```
+]
+
+---
+
+.pull-left[
+
+```r
+# Grafico exploratorio
+ggplot(disp, aes(x = metodo, 
+                 y = tiempo, 
+                 group = edad,
+                 color = edad)) +
+  geom_point() + geom_path()
+```
+
+
+El aestetico `group` mapeado a la `edad` permite que `geom_path` trace líneas uniendo los puntos del mismo grupo de edad.
+
+]
+
+
+.pull-right[
+&lt;img src="conceptos_diseno_files/figure-html/unnamed-chunk-22-1.svg" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+
+&lt;img src="images/TablaSS_dca_dbca.jpeg" width="70%" style="display: block; margin: auto;" /&gt;
+
+---
+
+
+```r
+# Analisis de varianza para el diseno en bloques:
+m &lt;- lm(tiempo ~ metodo + edad, data = disp)
+anova(m)
+```
+
+```
+#&gt; Analysis of Variance Table
+#&gt; 
+#&gt; Response: tiempo
+#&gt;           Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
+#&gt; metodo     2 18.5333  9.2667  21.385 0.0006165 ***
+#&gt; edad       4 24.9333  6.2333  14.385 0.0010017 ** 
+#&gt; Residuals  8  3.4667  0.4333                      
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+
+
+```r
+# Analisis de varianza asumiendo un DCA:
+m0 &lt;- lm(tiempo ~ metodo, data = disp)
+anova(m0)
+```
+
+```
+#&gt; Analysis of Variance Table
+#&gt; 
+#&gt; Response: tiempo
+#&gt;           Df Sum Sq Mean Sq F value  Pr(&gt;F)  
+#&gt; metodo     2 18.533  9.2667  3.9155 0.04909 *
+#&gt; Residuals 12 28.400  2.3667                  
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+
+```r
+24.9333 + 3.4667         # = 28.4 = SS del Error en el DCA
+```
+
+```
+#&gt; [1] 28.4
+```
+
+```r
+24.9333 / 28.4 * 100     # % del Error en el DCA debido a la edad  (=bloque)  
+```
+
+```
+#&gt; [1] 87.79331
+```
+
+```r
+ 3.4667 / 28.4 * 100     # % del Error en el DCA debido a otras cosas
+```
+
+```
+#&gt; [1] 12.20669
+```
+
+
+---
+
+&lt;div class="figure" style="text-align: center"&gt;
+&lt;img src="conceptos_diseno_files/figure-html/unnamed-chunk-27-1.svg" alt="Distribución porcentual de la Suma de Cuadrados Total entre los dos diseños"  /&gt;
+&lt;p class="caption"&gt;Distribución porcentual de la Suma de Cuadrados Total entre los dos diseños&lt;/p&gt;
+&lt;/div&gt;
+
+---
+
+template: dbca
+layout: false
+
+## Grados de libertad
+
+.pull-left[
+En un .orange[DBCA], los grados de libertad del error se reducen con respecto a un .orange[DCA]. Esto conlleva que el valor crítico de la `\(F\)` sea mayor y por ende, sea más díficil rechazar `\(H_0\)`.
+
+La ventaja del .orange[DBCA] se encuentra en que se espera que la varianza del error disminuya, y por tanto el valor calculado del `\(F\)` sea más grande, como ocurrió con el ejemplo del tiempo de aprendizaje.
+]
+
+
+.pull-right[
+&lt;img src="conceptos_diseno_files/figure-html/unnamed-chunk-28-1.svg" width="66%" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+template: dbca
+layout: true
+
+## Eficiencia relativa en la formación de bloques
+
+---
+
+Para medir que tan eficiente fue introducir la variable de bloqueo respecto a un DCA se puede calcular la **.orange[eficiencia relativa, RE]**, dada por:
+
+
+$$ RE = \left( \dfrac{v_2 + 1}{(v_2 + 3)s^2_2} \right) \div \left( \dfrac{v_1 + 1}{(v_1 + 3)s^2_1} \right)  $$
+
+donde el DCA es el 1 y el DBCA es el 2, `\(v_1\)` y `\(v_2\)` son los grados de libertad de los residuales de cada diseño, respectivamente. `\(s^2_1\)` y `\(s^2_2\)` son los cuadrados medios del error ( `\(MS_{res}\)`) de cada diseño respectivamente. En general se coloca en el numerador los datos del diseño que se considera más eficiente.
+
+---
+
+### Interpretación
+
+- Si la RE `\(&gt; 1\)` el diseño 2 (con el bloqueo) fue mejor que el diseño 1 (sin bloque, bajo un esquema completamente aleatorizado).
+
+
+- Si la RE `\(\leq 1\)` el diseño 2 (con el bloqueo) no resultó más eficiente que el diseño 1.
+
+---
+
+### Cálculo en **R**
+
+Se construyó esta [función o comando](https://raw.githubusercontent.com/paguzmang/funciones/master/er_bloques.R)  para realizar el cálculo de la ER.
+
+
+```r
+# Se carga script R con funcion para calcular ER
+source('https://raw.githubusercontent.com/paguzmang/funciones/master/er_bloques.R')
+er_bloques(m1 = m0, m2 = m)   # se aplica la funcion
+```
+
+
+```
+#&gt;    modelo      CM_e  CV_e Efic_rel
+#&gt; 1  m1_DCA 2.3666667 15.28       NA
+#&gt; 2 m2_DBCA 0.4333333  6.54    5.156
+```
+
+---
+
+template: dbca
+layout: true
+
+## Comparando medias
+
+---
+
+
+```r
+library(emmeans)
+med &lt;- emmeans(m, ~ metodo)   # Tabla de medias con error estandar + IC95%
+med
+```
+
+```
+#&gt;  metodo emmean    SE df lower.CL upper.CL
+#&gt;  A         9.0 0.294  8     8.32     9.68
+#&gt;  B         9.6 0.294  8     8.92    10.28
+#&gt;  C        11.6 0.294  8    10.92    12.28
+#&gt; 
+#&gt; Results are averaged over the levels of: edad 
+#&gt; Confidence level used: 0.95
+```
+
+---
+
+
+```r
+library(emmeans)
+med &lt;- emmeans(m, specs = "metodo")   # Tabla de medias con error estandar + IC95%
+med
+```
+
+```
+#&gt;  metodo emmean    SE df lower.CL upper.CL
+#&gt;  A         9.0 0.294  8     8.32     9.68
+#&gt;  B         9.6 0.294  8     8.92    10.28
+#&gt;  C        11.6 0.294  8    10.92    12.28
+#&gt; 
+#&gt; Results are averaged over the levels of: edad 
+#&gt; Confidence level used: 0.95
+```
+
+---
+
+
+```r
+contrast(med, method = "pairwise")   # Comparaciones multiples de Tukey
+```
+
+```
+#&gt;  contrast estimate    SE df t.ratio p.value
+#&gt;  A - B        -0.6 0.416  8 -1.441  0.3667 
+#&gt;  A - C        -2.6 0.416  8 -6.245  0.0006 
+#&gt;  B - C        -2.0 0.416  8 -4.804  0.0034 
+#&gt; 
+#&gt; Results are averaged over the levels of: edad 
+#&gt; P value adjustment: tukey method for comparing a family of 3 estimates
+```
+
+---
+
+
+```r
+library(emmeans)
+emmeans(m, specs =  "metodo", contr = 'pairwise')
+```
+
+```
+#&gt; $emmeans
+#&gt;  metodo emmean    SE df lower.CL upper.CL
+#&gt;  A         9.0 0.294  8     8.32     9.68
+#&gt;  B         9.6 0.294  8     8.92    10.28
+#&gt;  C        11.6 0.294  8    10.92    12.28
+#&gt; 
+#&gt; Results are averaged over the levels of: edad 
+#&gt; Confidence level used: 0.95 
+#&gt; 
+#&gt; $contrasts
+#&gt;  contrast estimate    SE df t.ratio p.value
+#&gt;  A - B        -0.6 0.416  8 -1.441  0.3667 
+#&gt;  A - C        -2.6 0.416  8 -6.245  0.0006 
+#&gt;  B - C        -2.0 0.416  8 -4.804  0.0034 
+#&gt; 
+#&gt; Results are averaged over the levels of: edad 
+#&gt; P value adjustment: tukey method for comparing a family of 3 estimates
+```
+
+---
+
+.pull-left[
+
+```r
+# Grafico:
+emmeans(m, ~ metodo) %&gt;%
+  plot(CIs = T, comparisons = T, 
+       horizontal = F)
+```
+
+Las flechas rojas en el gráfico indican las comparaciones múltiples. Si las flechas rojas se solapan, no hay diferencias a un nivel `\(\alpha = 0.05\)`.
+
+Los métodos A  y B no difieren, y ambos difieren de C.
+]
+
+
+.pull-right[
+&lt;img src="conceptos_diseno_files/figure-html/unnamed-chunk-36-1.svg" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+template: dbca
+layout: true
+
+## Conclusión del ejemplo
+
+---
+
+.pull-left[
+
+Luego de ajustar por la edad, el análisis de varianza indica que existen diferencias en el tiempo medio de aprendizaje por los tres métodos ( `\(F_{2,8} = 21.4\)`; valor `\(p = 0.0006\)`). 
+
+]
+
+
+.pull-right[
+&lt;img src="conceptos_diseno_files/figure-html/unnamed-chunk-37-1.svg" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+.pull-left[
+
+Por la prueba de comparaciones múltiples de Tukey no se lograron detectar diferencias entre los métodos A y B (valor `\(p = 0.367\)`), pero si entre los métodos A y C (valor `\(p = 0.0006\)`) y los métodos B y C (valor `\(p = 0.0034\)`). 
+
+Si se busca lograr un menor tiempo de aprendizaje se debe usar alguno de los métodos A o B.
+
+
+]
+
+
+.pull-right[
+&lt;img src="conceptos_diseno_files/figure-html/unnamed-chunk-38-1.svg" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+template: dbca
+layout: true
+
+## Ejercicio: Ganancia en peso de lechones
+
+---
+
+
+
+
+Se quiere evaluar el efecto de tres tratamientos en la dieta sobre la ganancia en peso de lechones destetos. Para el ensayo se utilizaron  12 lechones. No obstante, los lechones fueron de pesos diferentes al inicio del ensayo y se piensa que el peso inicial de los mismos podría afectar la variable respuesta (ganancia), por tanto se crearon cuatro bloques de tres lechones c/u, donde los tres individuos dentro de cada bloque fueron de pesos iniciales muy similares. Luego, dentro de cada bloque se aleatorizaron los tratamientos a los tres individuos. Descargue los datos [aquí](datos/lechones.csv) y realice las siguientes actividades.
+
+
+---
+
+1. Realice una tabla de frecuencias de dos vías para verificar la distribución de los individuos en el ensayo.
+
+2. Realice un gráfico exploratorio que permita revisar el efecto del bloque (formado por el peso inicial) y el tratamiento.
+
+3. Realice un análisis de varianza que incluya el efecto del bloque y del tratamiento. Concluya.
+
+4. Mida la eficiencia en la formación de bloques.
+
+5. Si resulta pertinente, realice una prueba de comparaciones múltiples de Tukey.
+
+---
+
+name: dosfac0
+layout: false
+class: middle inverse right
+count: false
+
+&lt;h1&gt;Extensión:&lt;br&gt;Dos o más factores&lt;/h1&gt;
+
+.footer[[Regresar al contenido](#toc)]
+---
+
+name: dosfac
+
+# Extensión: Dos o más factores
+
+---
+
+template: dosfac
+
+&lt;br&gt;
+
+Los ejemplos anteriores han considero un sólo factor con `\(p\)` niveles (a diferencia del factor de bloque). En este caso, cada nivel es un tratamiento.
+
+--
+
+Cuando se busca evaluar más de un factor, cada uno con cierto número de niveles, cada tratamiento equivale a una .orange[combinación] particular de niveles de todos los factores.
+
+---
+template: dosfac
+
+&lt;br&gt;
+
+P.e., suponga que interesa evaluar el efecto de la luz (baja, media y alta) y del estrés (con y sin estrés) sobre el crecimiento de las plantulas de cierta especie.
+
+--
+
+La luz y el estrés son los factores, el primero con tres niveles y el segundo con dos niveles, de modo que resultan `\(3 \times 2 = 6\)` tratamientos.
+
+
+
+&lt;table class="table" style="width: auto !important; margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+&lt;tr&gt;
+&lt;th style="empty-cells: hide;border-bottom:hidden;" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="empty-cells: hide;border-bottom:hidden;" colspan="1"&gt;&lt;/th&gt;
+&lt;th style="border-bottom:hidden;padding-bottom:0; padding-left:3px;padding-right:3px;text-align: center; padding-right: 4px; padding-left: 4px; background-color: wheat !important;" colspan="3"&gt;&lt;div style="border-bottom: 1px solid #ddd; padding-bottom: 5px; "&gt;Luz&lt;/div&gt;&lt;/th&gt;
+&lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;background-color: wheat !important;"&gt;    &lt;/th&gt;
+   &lt;th style="text-align:left;background-color: wheat !important;"&gt;   &lt;/th&gt;
+   &lt;th style="text-align:left;background-color: wheat !important;"&gt; baja &lt;/th&gt;
+   &lt;th style="text-align:left;background-color: wheat !important;"&gt; media &lt;/th&gt;
+   &lt;th style="text-align:left;background-color: wheat !important;"&gt; alta &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;font-weight: bold;background-color: wheat !important;vertical-align: middle !important;" rowspan="2"&gt; Estrés &lt;/td&gt;
+   &lt;td style="text-align:left;font-weight: bold;background-color: wheat !important;"&gt; sin &lt;/td&gt;
+   &lt;td style="text-align:left;font-weight: bold;color: white !important;background-color: orchid !important;"&gt; sin:baja &lt;/td&gt;
+   &lt;td style="text-align:left;font-weight: bold;color: white !important;background-color: orchid !important;"&gt; sin:media &lt;/td&gt;
+   &lt;td style="text-align:left;font-weight: bold;color: white !important;background-color: orchid !important;"&gt; sin:alta &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   
+   &lt;td style="text-align:left;font-weight: bold;background-color: wheat !important;"&gt; con &lt;/td&gt;
+   &lt;td style="text-align:left;font-weight: bold;color: white !important;background-color: orchid !important;"&gt; con:baja &lt;/td&gt;
+   &lt;td style="text-align:left;font-weight: bold;color: white !important;background-color: orchid !important;"&gt; con:media &lt;/td&gt;
+   &lt;td style="text-align:left;font-weight: bold;color: white !important;background-color: orchid !important;"&gt; con:alta &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+template: dosfac
+
+## Notación
+
+Cuando hay dos o más factores, el .orange[tamaño] del experimento, dado por el número de tratamientos, puede ser encontrado multiplicando los niveles de cada factor. Por ejemplo:
+
+--
+
+
+- Si hay dos factores, cada uno con dos niveles, entonces habrán `\(2 \times 2 = 2^2 = 4\)` tratamientos.
+
+--
+
+- Si hay tres factores, dos de ellos con dos niveles, y el otro con tres niveles, entonces, habrán `\(2 \times 2 \times 3 = 2^2 \times 3 = 12\)` tratamientos.
+
+--
+
+Así, este tipo de experimentos .orange[factoriales], se acostumbra a nombrarse usando un producto de potencias de la forma: `\(a^g \times b^h\)`, que indicaría un factorial que tiene `\(g\)` factores con `\(a\)` niveles cada uno y `\(h\)` factores con `\(b\)` niveles cada uno.
+
+---
+
+template: dosfac
+
+## Notación: Ejemplo
+
+Si se organizó un experimento **factorial** `\(3^2 \times 2^2\)`, indique:
+
+1. ¿Cuántos factores tiene?
+
+ R/. .red[.can-edit[coloque aquí la respuesta]]
+
+2. ¿Cuántos niveles tiene cada factor?
+
+ R/. .red[.can-edit[coloque aquí la respuesta]]
+ 
+3. ¿Cuántos tratamientos hay en total?
+
+ R/. .red[.can-edit[coloque aquí la respuesta]]
+
+---
+
+template: dosfac
+
+## Notación: Otro ejemplo
+
+Si se organizó un experimento **factorial** `\(2^2 \times 4 \times 3\)`, indique:
+
+1. ¿Cuántos factores tiene?
+
+ R/. .red[.can-edit[coloque aquí la respuesta]]
+
+2. ¿Cuántos niveles tiene cada factor?
+
+ R/. .red[.can-edit[coloque aquí la respuesta]]
+ 
+3. ¿Cuántos tratamientos hay en total?
+
+ R/. .red[.can-edit[coloque aquí la respuesta]]
+
+
+
+---
+
+template: dosfac
+layout: true
+
+## Asignación de UE a tratamientos (DCA)
+
+---
+
+
+```r
+# Creacion manual de etiquetas para los tratamientos:
+et.trat &lt;- c("con-baja", "con-media", "con-alta", 
+             "sin-baja", "sin-media", "sin-alta")
+
+et.trat
+```
+
+```
+#&gt; [1] "con-baja"  "con-media" "con-alta"  "sin-baja"  "sin-media" "sin-alta"
+```
+
+---
+
+
+```r
+# Creacion automatica de etiquetas para los tratamientos:
+et.trat &lt;- expand.grid(
+  luz    = c('baja', 'media', 'alta'),
+  estres = c('con', 'sin') 
+  ) %&gt;%
+  mutate(
+    trat = paste(estres, luz, sep = '-')
+  ) %&gt;% pull( trat )
+
+et.trat
+```
+
+```
+#&gt; [1] "con-baja"  "con-media" "con-alta"  "sin-baja"  "sin-media" "sin-alta"
+```
+
+
+---
+
+.pull-left[
+
+```r
+# Asignacion de UE a trat
+dca &lt;- tibble(
+  ue = 1:24,
+  trat = complete_ra(
+    N = 24, num_arms = 6, 
+*   conditions = et.trat)
+)
+```
+]
+
+.pull-right[
+
+```r
+dca ## imprime la tabla
+```
+
+```
+#&gt; # A tibble: 24 x 2
+#&gt;       ue trat     
+#&gt;    &lt;int&gt; &lt;fct&gt;    
+#&gt;  1     1 sin-media
+#&gt;  2     2 con-baja 
+#&gt;  3     3 sin-alta 
+#&gt;  4     4 sin-baja 
+#&gt;  5     5 con-baja 
+#&gt;  6     6 con-alta 
+#&gt;  7     7 sin-alta 
+#&gt;  8     8 con-alta 
+#&gt;  9     9 sin-alta 
+#&gt; 10    10 sin-alta 
+#&gt; # … with 14 more rows
+```
+]
+
+---
+
+.pull-left[
+
+```r
+# Asignacion de UE a trat
+dca &lt;- tibble(
+  ue = 1:24,
+  trat = complete_ra(
+    N = 24, num_arms = 6, 
+    conditions = et.trat)
+  ) %&gt;%
+  separate(
+    col = trat,
+    into = c('estres', 'luz'),
+    sep = '-'
+  )
+```
+]
+
+.pull-right[
+
+```r
+dca ## imprime la tabla
+```
+
+```
+#&gt; # A tibble: 24 x 3
+#&gt;       ue estres luz  
+#&gt;    &lt;int&gt; &lt;chr&gt;  &lt;chr&gt;
+#&gt;  1     1 sin    media
+#&gt;  2     2 con    baja 
+#&gt;  3     3 sin    alta 
+#&gt;  4     4 sin    baja 
+#&gt;  5     5 con    baja 
+#&gt;  6     6 con    alta 
+#&gt;  7     7 sin    alta 
+#&gt;  8     8 con    alta 
+#&gt;  9     9 sin    alta 
+#&gt; 10    10 sin    alta 
+#&gt; # … with 14 more rows
+```
+]
+
+---
+
+
+```r
+# Revisando como quedo la REPLICACION luego de la asignacion:
+xtabs(~ estres + luz, data = dca) %&gt;%
+  addmargins()
+```
+
+```
+#&gt;       luz
+#&gt; estres alta baja media Sum
+#&gt;    con    4    4     4  12
+#&gt;    sin    4    4     4  12
+#&gt;    Sum    8    8     8  24
+```
+
+---
+
+Si algunas UE's se pierden durante el experimento, al final el diseño quedará .orange[desbalanceado]. Considere este ejemplo donde se perdieron tres UE's:
+
+
+
+
+
+```r
+# Revisando la REPLICACION al final del experimento:
+xtabs(~ estres + luz, data = dca1) %&gt;%
+  addmargins()
+```
+
+```
+#&gt;       luz
+#&gt; estres alta baja media Sum
+#&gt;    con    4    3     4  11
+#&gt;    sin    3    4     3  10
+#&gt;    Sum    7    7     7  21
+```
+
+---
+
+template: dosfac
+layout: true
+
+## Asignación de UE a tratamientos (DBCA)
+
+---
+
+Continuando con el mismo ejemplo sobre el efecto de la luz y el estrés en una planta, suponga que las plantulas que usted usará en el experimento vienen de cinco parentales diferentes (etiquetados como: B456, B378, C798, C301 y C356). 
+
+--
+
+A usted particularmente no le interesan estos parentales, pero quisiera controlar este factor como una forma de reducir el error experimental, entonces usará el .orange[parental como un factor de bloqueo] y asignará los tratamientos de acuerdo a un .orange[DBCA].
+
+--
+
+Bajo un .orange[DBCA] con q = 5 bloques (= parentales), si el experimento tendrá p = 6 tratamientos, ¿cuántas UE's se requiere por bloque? 
+
+.pull-right[ &amp;#8594; .red[.can-edit[coloque aquí la respuesta]] ]
+
+---
+
+
+
+.left-column[
+Descargar archivo **.orange[parentales.xlsx]** desde  [**aquí**](datos/parentales.xlsx)
+
+]
+
+.right-column[
+&lt;img src="images/excel_parentales.png" width="65%" style="display: block; margin: auto;" /&gt;
+]
+
+
+
+---
+
+
+```r
+# Se importa la tabla desde excel
+library(readxl)
+dbca &lt;- read_excel(path = 'parentales.xlsx')
+dbca
+```
+
+
+
+```
+#&gt; # A tibble: 30 x 2
+#&gt;    parental plantulas
+#&gt;    &lt;chr&gt;    &lt;chr&gt;    
+#&gt;  1 B456     p21      
+#&gt;  2 B456     p18      
+#&gt;  3 B456     p2       
+#&gt;  4 B456     p10      
+#&gt;  5 B456     p15      
+#&gt;  6 B456     p14      
+#&gt;  7 B378     p20      
+#&gt;  8 B378     p28      
+#&gt;  9 B378     p23      
+#&gt; 10 B378     p27      
+#&gt; # … with 20 more rows
+```
+
+
+---
+
+
+```r
+# Se realiza la asignacion de tratamientos a las UE's
+# dentro de bloques:
+dbca &lt;- dbca %&gt;%
+  mutate(
+    trat = block_ra(blocks = parental, num_arms = 6, conditions = et.trat)
+  ) %&gt;%
+  separate(
+    col  = trat,
+    into = c('estres', 'luz'),
+    sep  = '-'
+  )
+```
+
+
+---
+
+.pull-left[
+
+```r
+dbca  # se imprima la tabla
+```
+
+```
+#&gt; # A tibble: 30 x 4
+#&gt;    parental plantulas estres luz  
+#&gt;    &lt;chr&gt;    &lt;chr&gt;     &lt;chr&gt;  &lt;chr&gt;
+#&gt;  1 B456     p21       con    media
+#&gt;  2 B456     p18       sin    media
+#&gt;  3 B456     p2        sin    alta 
+#&gt;  4 B456     p10       con    alta 
+#&gt;  5 B456     p15       sin    baja 
+#&gt;  6 B456     p14       con    baja 
+#&gt;  7 B378     p20       sin    alta 
+#&gt;  8 B378     p28       con    baja 
+#&gt;  9 B378     p23       con    alta 
+#&gt; 10 B378     p27       sin    baja 
+#&gt; # … with 20 more rows
+```
+]
+
+--
+
+.pull-right[
+
+```r
+# Revisando la replicacion 
+# despues de la asigancion
+xtabs(~ estres + luz + parental, 
+      data = dbca)
+```
+
+```
+#&gt; , , parental = B378
+#&gt; 
+#&gt;       luz
+#&gt; estres alta baja media
+#&gt;    con    1    1     1
+#&gt;    sin    1    1     1
+#&gt; 
+#&gt; , , parental = B456
+#&gt; 
+#&gt;       luz
+#&gt; estres alta baja media
+#&gt;    con    1    1     1
+#&gt;    sin    1    1     1
+#&gt; 
+#&gt; , , parental = C301
+#&gt; 
+#&gt;       luz
+#&gt; estres alta baja media
+#&gt;    con    1    1     1
+#&gt;    sin    1    1     1
+#&gt; 
+#&gt; , , parental = C356
+#&gt; 
+#&gt;       luz
+#&gt; estres alta baja media
+#&gt;    con    1    1     1
+#&gt;    sin    1    1     1
+#&gt; 
+#&gt; , , parental = C798
+#&gt; 
+#&gt;       luz
+#&gt; estres alta baja media
+#&gt;    con    1    1     1
+#&gt;    sin    1    1     1
+```
+]
+
+---
+
+**.orange[Exportar]** la tabla con la asignación a otra hoja del mismo libro de Excel que contenia la identificación de los bloques y UE
+
+
+```r
+library(openxlsx)
+wb &lt;- loadWorkbook(file = 'parentales.xlsx')
+addWorksheet(wb, sheetName = 'asignacion')
+writeData(wb, sheet = 'asignacion', x = dbca)
+saveWorkbook(wb, file = 'parentales2.xlsx', overwrite = T)
+```
+
+
+
+
+---
+
+
+&lt;img src="images/excel_parentales_asignacion.png" width="55%" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+template: dosfac
+layout: true
+
+## Análisis de datos bajo DCA
+
+---
+
+&lt;br&gt;
+
+--
+
+Suponga un DCA bajo una estructura .orange[factorial] `\(3 \times 2\)`, donde el factor A tiene tres niveles ( `\(a_1, a_2, a_3\)`) y el factor B tiene dos niveles ( `\(b_1, b_2\)`). 
+
+--
+
+Los .orange[tratamientos] serían:
+
+`$$\begin{array}{c|cc}
+    &amp; b_1 &amp; b_2 \\
+\hline
+a_1 &amp; a_1:b_1 &amp; a_1:b_2 \\
+a_2 &amp; a_2:b_1 &amp; a_2:b_2 \\
+a_3 &amp; a_3:b_1 &amp; a_3:b_2 \\
+\end{array}$$`
+
+
+---
+
+.left-column[
+### .purple[Hipótesis]
+]
+
+.right-column[
+
+`$$\text{Sobre A} \left \lbrace \begin{array}{ll}
+H_0: &amp; \mu_{a_1} = \mu_{a_2} = \mu_{a_3} \\
+H_1: &amp; \text{Al menos dos medias difieren} \\
+\end{array}\right.$$`
+
+&lt;br&gt;
+
+`$$\text{Sobre B} \left \lbrace \begin{array}{ll}
+H_0: &amp; \mu_{b_1} = \mu_{b_2} \\
+H_1: &amp; \mu_{b_1} \neq \mu_{b_2} \\
+\end{array}\right.$$`
+
+&lt;br&gt;
+
+`$$\text{Sobre A:B} \left \lbrace \begin{array}{ll}
+H_0: &amp; \text{No existe interacción entre A y B} \\
+H_1: &amp; \text{Existe interacción entre A y B} \\
+\end{array}\right.$$`
+]
+
+---
+
+.left-column[
+### .purple[Hipótesis de interacción]
+]
+
+--
+
+.right-column[
+La .orange[interacción] entre dos factores, A y B, ocurre cuando el efecto de uno de ellos cambia entre los niveles del otro.
+
+Para entender la interacción primero definamos las .orange[medias de celda] o .orange[medias de los tratamientos]:
+
+`$$\begin{array}{c|cc|c}
+    &amp;   &amp;  &amp; \text{Efecto de B en}\\
+    &amp;  b_1 &amp; b_2 &amp; \text{cada nivel de A}\\
+\hline
+a_1 &amp; \mu_{11} &amp; \mu_{12}  &amp; \mu_{11} - \mu_{12}\\
+a_2 &amp; \mu_{21} &amp; \mu_{22}  &amp; \mu_{21} - \mu_{22}\\
+a_3 &amp; \mu_{31} &amp; \mu_{32}  &amp; \mu_{31} - \mu_{32}
+\end{array}$$`
+]
+
+---
+
+.left-column[
+&lt;h3&gt;.purple[Hipótesis de interacción]&lt;/h3&gt;
+
+]
+
+
+
+.right-column[
+La .orange[interacción] entre dos factores, A y B, ocurre cuando el efecto de uno de ellos cambia entre los niveles del otro. 
+
+.orange[No hay] interacción entre A y B si:
+
+`$$\underbrace{\mu_{11} - \mu_{12}}_{\text{Efecto de B en } a_1} = \underbrace{\mu_{21} - \mu_{22}}_{\text{Efecto de B en } a_2} = \underbrace{\mu_{31} - \mu_{32}}_{\text{Efecto de B en } a_3}$$`
+
+.orange[Si hay] interacción entre A y B cuando al menos un par de dichos efectos son diferentes.
+]
+
+---
+
+.left-column[
+### .purple[Perfil de medias para identificar interacción entre dos factores]
+
+]
+
+--
+
+.right-column[
+&lt;img src="conceptos_diseno_files/figure-html/unnamed-chunk-60-1.svg" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+.left-column[
+&lt;h3&gt;.purple[Perfil de medias para identificar interacción entre dos factores]&lt;/h3&gt;
+
+]
+
+.right-column[
+&lt;img src="conceptos_diseno_files/figure-html/unnamed-chunk-61-1.svg" style="display: block; margin: auto;" /&gt;
+]
+
+
+---
+
+.left-column[
+&lt;h3&gt;.purple[Perfil de medias para identificar interacción entre dos factores]&lt;/h3&gt;
+
+]
+
+
+
+.right-column[
+
+```r
+# Creacion de un conjunto de mu's SIN INTERACCION:
+mu.sin.int &lt;- tibble(
+  A        = c('a1', 'a2', 'a3'),
+  b1       = c(5,  5+2,  5+2+2), 
+  b2       = b1 + 4,
+  efecto_B = b2 - b1
+)
+mu.sin.int
+```
+
+```
+#&gt; # A tibble: 3 x 4
+#&gt;   A        b1    b2 efecto_B
+#&gt;   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;
+#&gt; 1 a1        5     9        4
+#&gt; 2 a2        7    11        4
+#&gt; 3 a3        9    13        4
+```
+]
+
+---
+
+.left-column[
+&lt;h3&gt;.purple[Perfil de medias para identificar interacción entre dos factores]&lt;/h3&gt;
+]
+
+
+.right-column[
+
+```r
+# Se convierten los datos a formato largo
+mu.sin.int &lt;- mu.sin.int %&gt;% select(-efecto_B) %&gt;%
+  pivot_longer(cols = c(b1, b2), names_to = 'B', 
+               values_to = 'mu')
+mu.sin.int
+```
+
+```
+#&gt; # A tibble: 6 x 3
+#&gt;   A     B        mu
+#&gt;   &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt;
+*#&gt; 1 a1    b1        5
+*#&gt; 2 a1    b2        9
+#&gt; 3 a2    b1        7
+#&gt; 4 a2    b2       11
+*#&gt; 5 a3    b1        9
+*#&gt; 6 a3    b2       13
+```
+]
+
+---
+
+.left-column[
+&lt;h3&gt;.purple[Perfil de medias para identificar interacción entre dos factores]&lt;/h3&gt;
+]
+
+
+.right-column[
+
+```r
+# Grafico: perfil de medias (NO interaccion)
+ggplot(mu.sin.int, aes(x = B, y = mu, group = A, color = A)) +
+  geom_point(size = 3) + geom_path() + 
+  labs(title = 'Sin interacción')
+```
+
+&lt;img src="conceptos_diseno_files/figure-html/unnamed-chunk-64-1.svg" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+.left-column[
+&lt;h3&gt;.purple[Perfil de medias para identificar interacción entre dos factores]&lt;/h3&gt;
+]
+
+
+.right-column[
+
+```r
+# Creacion de un conjunto de mu's CON INTERACCION:
+mu.con.int &lt;- tibble(
+  A        = c('a1', 'a2', 'a3'),
+  b1       = c(5,    7,   9  ), 
+  b2       = c(5+4,  7-3, 9+4),
+  efecto_B = b2 - b1
+)
+mu.con.int
+```
+
+```
+#&gt; # A tibble: 3 x 4
+#&gt;   A        b1    b2 efecto_B
+#&gt;   &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;
+#&gt; 1 a1        5     9        4
+#&gt; 2 a2        7     4       -3
+#&gt; 3 a3        9    13        4
+```
+]
+
+---
+
+.left-column[
+&lt;h3&gt;.purple[Perfil de medias para identificar interacción entre dos factores]&lt;/h3&gt;
+]
+
+
+.right-column[
+
+```r
+# Se convierten los datos a formato largo
+mu.con.int &lt;- mu.con.int %&gt;% select(-efecto_B) %&gt;%
+  pivot_longer(cols = c(b1, b2), names_to = 'B', 
+               values_to = 'mu')
+mu.con.int
+```
+
+```
+#&gt; # A tibble: 6 x 3
+#&gt;   A     B        mu
+#&gt;   &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt;
+*#&gt; 1 a1    b1        5
+*#&gt; 2 a1    b2        9
+#&gt; 3 a2    b1        7
+#&gt; 4 a2    b2        4
+*#&gt; 5 a3    b1        9
+*#&gt; 6 a3    b2       13
+```
+]
+
+---
+
+
+
+
+
+.left-column[
+### .purple[Ejemplo]
+
+Protección contra muerte célular
+]
+
+
+.right-column[
+
+La muerte celular causada por un accidente cerebrovascular resulta parcialmente de la acumulación de altas concentraciones de glutamato. 
+
+Se buscó determinar si diferentes dosis de troglitazone (1.3, 4.5 y 13.5 `\(\mu\)`M) y diferentes formas iónicas (- y +) del LY294002, un PI3-kinase inhibitor, podrían generar diferentes niveles de neuroprotección. 
+
+]
+
+---
+
+.left-column[
+&lt;h3&gt;.purple[Ejemplo]&lt;/h3&gt;
+
+Protección contra muerte célular
+
+Descargue [aquí](datos/EXR_C08_S05_01.xlsx) los datos.
+
+]
+
+
+.right-column[
+
+Cuatro ratas fueron estudiadas en cada combinación de dosis y forma iónica, y la respuesta registrada fue el porcentaje de muerte celular con relación a la muerte observada con glutamato. Entonces valores más altos de la respuesta implican menor neuroprotección. 
+
+
+```r
+# Lectura de datos
+dat &lt;- read_excel(path = 'EXR_C08_S05_01.xlsx')
+str(dat)
+```
+
+
+
+```
+#&gt; tibble [24 × 3] (S3: tbl_df/tbl/data.frame)
+#&gt;  $ Percent: num [1:24] 73.6 130.7 118 140.2 97.1 ...
+#&gt;  $ Treat  : chr [1:24] "Negative" "Negative" "Negative" "Negative" ...
+#&gt;  $ Dose   : num [1:24] 1.3 1.3 1.3 1.3 1.3 1.3 1.3 1.3 4.5 4.5 ...
+```
+
+]
+
+---
+
+.left-column[
+&lt;h3&gt;.purple[Ejemplo]&lt;/h3&gt;
+
+Protección contra muerte célular
+
+]
+
+
+.right-column[
+
+
+```r
+# Se convierte la dosis en un factor
+dat &lt;- mutate(dat, DoseF = factor(Dose))
+str(dat)
+```
+
+```
+#&gt; tibble [24 × 4] (S3: tbl_df/tbl/data.frame)
+#&gt;  $ Percent: num [1:24] 73.6 130.7 118 140.2 97.1 ...
+#&gt;  $ Treat  : chr [1:24] "Negative" "Negative" "Negative" "Negative" ...
+#&gt;  $ Dose   : num [1:24] 1.3 1.3 1.3 1.3 1.3 1.3 1.3 1.3 4.5 4.5 ...
+#&gt;  $ DoseF  : Factor w/ 3 levels "1.3","4.5","13.5": 1 1 1 1 1 1 1 1 2 2 ...
+```
+
+]
+
+---
+
+.left-column[
+&lt;h3&gt;.purple[Ejemplo]&lt;/h3&gt;
+
+Protección contra muerte célular
+
+]
+
+
+.right-column[
+
+
+```r
+# Revisamos la replicacion:
+xtabs(~ Treat + DoseF, data = dat) %&gt;% addmargins()
+```
+
+```
+#&gt;           DoseF
+#&gt; Treat      1.3 4.5 13.5 Sum
+#&gt;   Negative   4   4    4  12
+#&gt;   Positive   4   4    4  12
+#&gt;   Sum        8   8    8  24
+```
+
+El diseño esta balanceado.
+
+
+]
+
+---
+
+.pull-left[
+&lt;h3&gt;.purple[Ejemplo]&lt;/h3&gt;
+
+
+```r
+ggplot(dat, aes(x = Treat, 
+                y = Percent)) +
+  geom_boxplot() + 
+  geom_jitter(width = 0.1, 
+              height = 0)
+```
+
+]
+
+
+.pull-right[
+
+
+&lt;img src="conceptos_diseno_files/figure-html/unnamed-chunk-73-1.svg" style="display: block; margin: auto;" /&gt;
+
+
+]
+
+---
+
+.pull-left[
+&lt;h3&gt;.purple[Ejemplo]&lt;/h3&gt;
+
+
+```r
+ggplot(dat, aes(x = Dose, 
+                y = Percent)) +
+  geom_jitter(width = 0.1, 
+              height = 0)
+```
+
+]
+
+
+.pull-right[
+
+
+&lt;img src="conceptos_diseno_files/figure-html/unnamed-chunk-75-1.svg" style="display: block; margin: auto;" /&gt;
+
+
+]
+
+---
+
+.pull-left[
+&lt;h3&gt;.purple[Ejemplo]&lt;/h3&gt;
+
+
+```r
+ggplot(dat, aes(x = Dose, 
+                y = Percent)) +
+  geom_jitter(width = 0.1, 
+              height = 0) +
+  scale_x_continuous(
+    breaks = c(1.3, 4.5, 13.5),
+    limits = c(0, 15)
+  )
+```
+
+]
+
+
+.pull-right[
+
+
+&lt;img src="conceptos_diseno_files/figure-html/unnamed-chunk-77-1.svg" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+.pull-left[
+&lt;h3&gt;.purple[Ejemplo]&lt;/h3&gt;
+
+
+```r
+ggplot(dat, aes(x = Dose, 
+                y = Percent,
+                color = Treat)) +
+  geom_point(position = 
+     position_dodge(width = 2)) +
+  scale_x_continuous(
+    breaks = c(1.3, 4.5, 13.5),
+    limits = c(0, 15)
+  )
+```
+
+]
+
+
+.pull-right[
+
+
+&lt;img src="conceptos_diseno_files/figure-html/unnamed-chunk-79-1.svg" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+.pull-left[
+&lt;h3&gt;.purple[Ejemplo]&lt;/h3&gt;
+
+Medias de celda o de tratamientos:
+
+
+```r
+medias &lt;- dat %&gt;%
+  group_by(Treat, Dose) %&gt;%
+  summarise(
+    Percent = mean(Percent)
+  )
+```
+
+]
+
+
+.pull-right[
+
+
+
+```r
+medias
+```
+
+```
+#&gt; # A tibble: 6 x 3
+#&gt; # Groups:   Treat [2]
+#&gt;   Treat     Dose Percent
+#&gt;   &lt;chr&gt;    &lt;dbl&gt;   &lt;dbl&gt;
+#&gt; 1 Negative   1.3   116. 
+#&gt; 2 Negative   4.5    48.2
+#&gt; 3 Negative  13.5    17.8
+#&gt; 4 Positive   1.3   106. 
+#&gt; 5 Positive   4.5    34.9
+#&gt; 6 Positive  13.5   -14.4
+```
+
+]
+
+---
+
+.pull-left[
+&lt;h3&gt;.purple[Ejemplo]&lt;/h3&gt;
+
+Perfil de medias para explorar posibilidad de interacción
+
+
+```r
+ggplot(medias, aes(
+  x = Dose, y = Percent,
+  group = Treat, color = Treat)) +
+  geom_point() + geom_path() + 
+  scale_x_continuous(
+    breaks = c(1.3, 4.5, 13.5),
+    limits = c(0, 15)
+  )
+```
+
+]
+
+
+.pull-right[
+
+
+&lt;img src="conceptos_diseno_files/figure-html/unnamed-chunk-83-1.svg" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+&lt;h3&gt;.purple[Ejemplo: Análisis de varianza]&lt;/h3&gt;
+
+
+```r
+m &lt;- lm(Percent ~ DoseF + Treat + DoseF:Treat, data = dat)
+m &lt;- lm(Percent ~ DoseF * Treat, data = dat)  # equivalente
+anova(m)
+```
+
+```
+#&gt; Analysis of Variance Table
+#&gt; 
+#&gt; Response: Percent
+#&gt;             Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+#&gt; DoseF        2  48766 24382.8 74.5886 1.945e-09 ***
+#&gt; Treat        1   2022  2021.8  6.1848   0.02292 *  
+#&gt; DoseF:Treat  2    584   291.9  0.8928   0.42688    
+#&gt; Residuals   18   5884   326.9                      
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+&lt;h3&gt;.purple[Ejemplo: Modelo sin interacción]&lt;/h3&gt;
+
+
+```r
+m1 &lt;- lm(Percent ~ DoseF + Treat, data = dat)
+anova(m1)
+```
+
+```
+#&gt; Analysis of Variance Table
+#&gt; 
+#&gt; Response: Percent
+#&gt;           Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+#&gt; DoseF      2  48766 24382.8 75.3969 4.848e-10 ***
+#&gt; Treat      1   2022  2021.8  6.2519   0.02122 *  
+#&gt; Residuals 20   6468   323.4                      
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+.left-column[
+&lt;h3&gt;.purple[Ejemplo]&lt;/h3&gt;
+
+Medias y comparación de medias desde el modelo sin interacción para el factor **Treat**
+
+]
+
+
+.right-column[
+
+
+
+```r
+emmeans(m1, specs = "Treat", contr = "pairwise")
+```
+
+```
+#&gt; $emmeans
+#&gt;  Treat    emmean   SE df lower.CL upper.CL
+#&gt;  Negative   60.6 5.19 20     49.7     71.4
+#&gt;  Positive   42.2 5.19 20     31.4     53.0
+#&gt; 
+#&gt; Results are averaged over the levels of: DoseF 
+#&gt; Confidence level used: 0.95 
+#&gt; 
+#&gt; $contrasts
+#&gt;  contrast            estimate   SE df t.ratio p.value
+#&gt;  Negative - Positive     18.4 7.34 20 2.500   0.0212 
+#&gt; 
+#&gt; Results are averaged over the levels of: DoseF
+```
+
+]
+
+---
+
+.left-column[
+&lt;h3&gt;.purple[Ejemplo]&lt;/h3&gt;
+
+Medias y comparación de medias desde el modelo sin interacción  para el factor **DoseF**
+
+]
+
+
+.right-column[
+
+
+```r
+emmeans(m1, specs = "DoseF", contr = "pairwise")
+```
+
+```
+#&gt; $emmeans
+#&gt;  DoseF emmean   SE df lower.CL upper.CL
+#&gt;  1.3   110.82 6.36 20     97.6    124.1
+#&gt;  4.5    41.59 6.36 20     28.3     54.9
+#&gt;  13.5    1.71 6.36 20    -11.6     15.0
+#&gt; 
+#&gt; Results are averaged over the levels of: Treat 
+#&gt; Confidence level used: 0.95 
+#&gt; 
+#&gt; $contrasts
+#&gt;  contrast   estimate   SE df t.ratio p.value
+#&gt;  1.3 - 4.5      69.2 8.99 20  7.699  &lt;.0001 
+#&gt;  1.3 - 13.5    109.1 8.99 20 12.134  &lt;.0001 
+#&gt;  4.5 - 13.5     39.9 8.99 20  4.436  0.0007 
+#&gt; 
+#&gt; Results are averaged over the levels of: Treat 
+#&gt; P value adjustment: tukey method for comparing a family of 3 estimates
+```
+
+]
+
+---
+
+.left-column[
+&lt;h3&gt;.purple[Ejemplo]&lt;/h3&gt;
+
+Generación de tabla de medias para graficación
+
+]
+
+
+.right-column[
+
+
+
+```r
+med &lt;- emmeans(m1, ~ DoseF + Treat)
+med
+```
+
+```
+#&gt;  DoseF Treat    emmean   SE df lower.CL upper.CL
+#&gt;  1.3   Negative 119.99 7.34 20   104.68   135.31
+#&gt;  4.5   Negative  50.77 7.34 20    35.46    66.09
+#&gt;  13.5  Negative  10.89 7.34 20    -4.43    26.20
+#&gt;  1.3   Positive 101.64 7.34 20    86.32   116.95
+#&gt;  4.5   Positive  32.41 7.34 20    17.10    47.73
+#&gt;  13.5  Positive  -7.47 7.34 20   -22.78     7.84
+#&gt; 
+#&gt; Confidence level used: 0.95
+```
+
+]
+
+---
+
+.left-column[
+&lt;h3&gt;.purple[Ejemplo]&lt;/h3&gt;
+
+Gráfico de tabla de medias con barras de error (IC95%): 
+
+Código **R**
+
+]
+
+
+.right-column[
+
+
+
+```r
+ps &lt;- position_dodge(0.3)
+med %&gt;% as.data.frame() %&gt;%
+  ggplot(aes(x = DoseF, y = emmean, group = Treat, 
+             color = Treat)) +
+  geom_point(position = ps, size = 2) + 
+  geom_line(position = ps) +
+  geom_errorbar(aes(ymin = lower.CL, ymax = upper.CL), 
+                position = ps, width = 0.1)
+```
+
+]
+
+---
+
+.left-column[
+&lt;h3&gt;.purple[Ejemplo]&lt;/h3&gt;
+
+Gráfico de tabla de medias con barras de error (IC95%):
+
+**Gráfico**
+
+]
+
+
+.right-column[
+
+
+&lt;img src="conceptos_diseno_files/figure-html/unnamed-chunk-90-1.svg" style="display: block; margin: auto;" /&gt;
+
+]
+
+---
+
+.left-column[
+&lt;h3&gt;.purple[Ejemplo]&lt;/h3&gt;
+
+Calculando la media de los niveles de **Treat** en cada **DoseF**
+
+
+]
+
+
+.right-column[
+
+
+
+```r
+emmeans(m1, ~ Treat, by = "DoseF")
+```
+
+```
+#&gt; DoseF = 1.3:
+#&gt;  Treat    emmean   SE df lower.CL upper.CL
+#&gt;  Negative 119.99 7.34 20   104.68   135.31
+#&gt;  Positive 101.64 7.34 20    86.32   116.95
+#&gt; 
+#&gt; DoseF = 4.5:
+#&gt;  Treat    emmean   SE df lower.CL upper.CL
+#&gt;  Negative  50.77 7.34 20    35.46    66.09
+#&gt;  Positive  32.41 7.34 20    17.10    47.73
+#&gt; 
+#&gt; DoseF = 13.5:
+#&gt;  Treat    emmean   SE df lower.CL upper.CL
+#&gt;  Negative  10.89 7.34 20    -4.43    26.20
+#&gt;  Positive  -7.47 7.34 20   -22.78     7.84
+#&gt; 
+#&gt; Confidence level used: 0.95
+```
+
+]
+
+---
+
+.left-column[
+&lt;h3&gt;.purple[Ejemplo]&lt;/h3&gt;
+
+Calculando el efecto de **Treat** sobre la respuesta en cada **DoseF**
+
+
+]
+
+
+.right-column[
+
+
+
+```r
+emmeans(m1, ~ Treat, by = "DoseF") %&gt;%
+  contrast(method = "pairwise")
+```
+
+```
+#&gt; DoseF = 1.3:
+#&gt;  contrast            estimate   SE df t.ratio p.value
+#&gt;  Negative - Positive     18.4 7.34 20 2.500   0.0212 
+#&gt; 
+#&gt; DoseF = 4.5:
+#&gt;  contrast            estimate   SE df t.ratio p.value
+#&gt;  Negative - Positive     18.4 7.34 20 2.500   0.0212 
+#&gt; 
+#&gt; DoseF = 13.5:
+#&gt;  contrast            estimate   SE df t.ratio p.value
+#&gt;  Negative - Positive     18.4 7.34 20 2.500   0.0212
+```
+
+.small[.orange[Note] que el efecto de **Treat** sobre la respuesta es el mismo en cada nivel de la **DoseF**. Esto es debido a que en el modelo no tenemos el término de **interacción**.]
+
+]
+
+---
+
+template: dosfac
+layout: true
+
+## Ejercicio: Alga intermareal y herbívoros
+
+---
+
+En un experimento `\(2 \times 2\)` se investigó como los hervíboros afectan la abundancia de plantas que habitan la zona intermareal de un área costera en Washington usando transplantes del alga roja _Mazzaella parksii_. El experimento también examinó si el efecto de los hervíboros sobre el alga depende de la altura o lugar (más arriba o más abajo) de la zona intermareal donde el alga esta creciendo.
+
+Se utilizó como unidad experimental una **parcela**, con un total de 64 parcelas (del mismo tamaño). Treinta dos parcelas fueron ubicadas en la marca de la línea de marea baja, y las otras 32 fueron ubicadas en la mitad entre las marcas de marea baja y alta. 
+
+
+
+
+
+---
+
+Todas las parcelas se limpiaron de todos los organimos (algas y hervíboros). Luego, una cantidad constante de nueva alga (_M. parksii_) fue adeherida al suelo en el centro de cada parcela.
+
+La mitad de las parcelas en cada altura fueron encerradas excluyendo a los herbívoros (lapas y caracoles principalmente), la otra mitad se dejaron abiertas a la presencia de herbívoros.
+
+Al final se registró el área (en cm&lt;sup&gt;2&lt;/sup&gt;) cubierta por el alga en cada parcela. Los datos del área fueron transformados con raíz cuadrada para mejorar el cumplimiento del supuesto de normalidad y homogeneidad de varianzas.
+
+---
+
+.left-column[
+
+Descargue [aquí](datos/algaIntermareal.csv) los datos, importelos a **R** y explore la estructura de la tabla
+
+
+]
+
+
+.right-column[
+
+
+
+```r
+# Se importan los datos
+alga &lt;- read.csv(file = "algaIntermareal.csv")
+str(alga)   # estructura de la tabla
+```
+
+
+```
+#&gt; 'data.frame':	64 obs. of  3 variables:
+#&gt;  $ altura    : chr  "baja" "baja" "baja" "baja" ...
+#&gt;  $ herbiv    : chr  "aus" "aus" "aus" "aus" ...
+#&gt;  $ raiz2.area: num  9.41 34.47 46.67 16.64 24.38 ...
+```
+
+]
+
+---
+
+.left-column[
+
+Verifique la distribución de las filas entre los tratamientos mediante una tabla de frecuencias
+
+
+]
+
+
+.right-column[
+
+
+
+```r
+# Tabla de frecuencias de dos vias:
+xtabs(~ altura + herbiv, data = alga) %&gt;% addmargins()
+```
+
+```
+#&gt;        herbiv
+#&gt; altura  aus pres Sum
+#&gt;   baja   16   16  32
+#&gt;   mitad  16   16  32
+#&gt;   Sum    32   32  64
+```
+
+El factor `herbiv` (herbívoros) tiene niveles `aus` (ausente) y `pres` (presente), y el factor `altura` (intermareal) tiene niveles `baja` (en la línea de marea baja) y `mitad` (en la mitad entre las líneas de marea baja y alta).
+
+]
+
+---
+
+Realice las siguientes actividades
+
+.small[
+1. Realice un gráfico exploratorio de todas las parcelas que permita evaluar la cobertura del alga en relación con los factores bajo estudio.
+
+2. Calcule las medias de la cobertura algal por tratamiento. Con esto, realice un gráfico de perfil de medias para explorar la posibilidad de interacción.
+
+3. Realice un análisis de varianza que incluya el efecto principal de cada factor y además la interacción entre los dos factores.  ¿Existe interacción entre el factor de herbívoros y el factor de altura? Reporte el valor `\(F\)`, los grados de libertad y el valor `\(p\)` para la prueba de interacción. Concluya.
+
+4. Reporte el coeficiente de variación del experimento calculado como la raíz cuadrada del cuadrado medio del error en el análisis de varianza dividido por la media general de la respuesta.
+
+4. Desde el objeto del modelo, genere una tabla de medias de los tratamientos con errores estándar. Grafique esta tabla y describa el patrón de la interacción entre los factores.
+]
+
+---
+
+.left-column[
+
+Ayuda: 
+
+Considere el siguiente código **R** como ayuda para el ejercicio.
+
+
+]
+
+
+.right-column[
+
+
+```r
+# Modelo Anova:
+m &lt;- lm(raiz2.area ~ herbiv * altura, data = alga)
+anova(m)
+
+# Medias por herbiv en cada altura
+emmeans(m, ~ herbiv | altura)
+
+# Comparaciones multiples entre medias de los 
+# 4 tratamientos
+emmeans(m, ~ herbiv + altura) %&gt;% 
+  contrast(method = "pairwise")
+
+# Grafico de medias y comparaciones multiples
+emmeans(m, ~ herbiv + altura) %&gt;% 
+  plot(comparisons = T, horizontal = F)  
+
+# Grafico de medias por herbiv y comparaciones 
+# dentro de altura
+emmeans(m, ~ herbiv | altura) %&gt;% 
+  plot(comparisons = T, horizontal = F)  
+```
+
+]
+
+
+---
+layout: false
+class:  inverse center middle
+
+# Gracias !!
+
+
+Esta presentación fue creada en **R** + **Rstudio** con el paquete [`xaringan`](https://github.com/yihui/xaringan)
+
+El "chakra" viene de [remark.js](https://remarkjs.com/#1), [knitr](https://yihui.org/knitr/) y [R markdown](https://rmarkdown.rstudio.com/)
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "4:3"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
