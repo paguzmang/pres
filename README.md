@@ -1,2 +1,3 @@
 # pres
-Algunas presentaciones en HTML
+
+Presentaciones para apoyar cursos en Bioestadística. Página web: https://paguzmang.github.io/pres/
