@@ -1,0 +1,2012 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Regresión logística</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Pablo Andrés Guzmán" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/hygge.css" rel="stylesheet" />
+    <link href="libs/tile-view/tile-view.css" rel="stylesheet" />
+    <script src="libs/tile-view/tile-view.js"></script>
+    <script src="libs/clipboard/clipboard.min.js"></script>
+    <link href="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.css" rel="stylesheet" />
+    <script src="libs/xaringanExtra-clipboard/xaringanExtra-clipboard.js"></script>
+    <script>window.xaringanExtraClipboard(null, {"button":"Clic para copiar","success":"Copiado","error":"Pulse Ctrl + C para copiar"})</script>
+    <link href="libs/panelset/panelset.css" rel="stylesheet" />
+    <script src="libs/panelset/panelset.js"></script>
+    <script type="application/json" id="xaringanExtra-editable-docid">{"id":"x91132417ae3491cab3be28d6a2e24cf","expires":1}</script>
+    <script src="libs/himalaya/himalaya.js"></script>
+    <script src="libs/js-cookie/js.cookie.js"></script>
+    <link href="libs/editable/editable.css" rel="stylesheet" />
+    <script src="libs/editable/editable.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+    <link rel="stylesheet" href="misEstilos.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Regresión logística
+### Pablo Andrés Guzmán
+### Curso: Bioestadística 2<br>Maestría en Ciencias Biológicas
+### Mar 2021<br><br>Presione F para pantalla completa<br><a href="https://virtual.ces.edu.co/course/view.php?id=2690&amp;section=2">Clic para regresar al aula virtual</a>
+
+---
+
+
+
+
+
+
+
+
+
+## Presentación
+
+&lt;br&gt;
+&lt;br&gt;
+
+En este presentación estudiaremos la **regresión logística**, una técnica estadística para modelar el comportamiento de una variable respuesta binaria en función de uno o más variables predictoras. 
+
+Usaremos como ejemplo datos simulados sobre una infección bacteriana en las truchas (peces) de cierta región.
+
+---
+
+## Ejemplo: Truchas de sapomocho
+
+&lt;br&gt;
+
+Un estudio pretendio explorar el efecto de la época, la zona y la talla sobre la .orange[presencia] de una infección bacteriana en las truchas de la región de Sapomocho.
+
+Se colectó una muestra de truchas en tres zonas (A, B y C) de una cuenca hidrográfica y en cada una de dos épocas del año (seca y lluviosa). A cada individuo colectado se le registró la talla (en mm) y, por métodos moleculares, se determinó la presencia (o no) de la infección bacteriana.
+
+Los datos se encuentran en el archivo [truchas1.txt](datos/truchas1.txt) o en el archivo [truchas1.xlsx](datos/truchas1.xlsx)  en una tabla donde .orange[cada fila indica un individuo] colectado. 
+
+
+---
+
+class: inverse middle left
+
+### Librerías
+
+
+```r
+library(readxl)      # para leer tablas desde excel
+library(tidyverse)   # para ggplto2, dplyr, tibble, etc.
+```
+
+
+---
+
+### Importando los datos
+
+&lt;br&gt;
+
+
+
+```r
+library(readxl)
+truchas &lt;- read_excel(path = 'truchas1.xlsx')
+str(truchas)
+```
+
+--
+
+
+```
+#&gt; tibble [193 × 4] (S3: tbl_df/tbl/data.frame)
+#&gt;  $ bacteria: num [1:193] 0 0 0 0 1 0 0 0 0 0 ...
+#&gt;  $ talla   : num [1:193] 39.5 50.7 20.8 19.7 21.3 35.2 20.9 30.3 36.6 29.5 ...
+#&gt;  $ zona    : chr [1:193] "a" "a" "a" "a" ...
+#&gt;  $ epoca   : chr [1:193] "lluvia" "lluvia" "lluvia" "lluvia" ...
+```
+
+---
+
+### Resumen de la tabla
+
+
+```r
+summary(truchas)
+```
+
+```
+#&gt;     bacteria          talla           zona              epoca          
+#&gt;  Min.   :0.0000   Min.   : 5.40   Length:193         Length:193        
+#&gt;  1st Qu.:0.0000   1st Qu.:24.60   Class :character   Class :character  
+#&gt;  Median :0.0000   Median :31.90   Mode  :character   Mode  :character  
+#&gt;  Mean   :0.2591   Mean   :31.35                                        
+#&gt;  3rd Qu.:1.0000   3rd Qu.:36.90                                        
+#&gt;  Max.   :1.0000   Max.   :54.70
+```
+
+---
+
+### Se adicionan variables
+
+
+```r
+truchas &lt;- truchas %&gt;%
+  mutate(
+    zonaF  = factor(zona),
+    epocaF = factor(epoca),
+    tallaF = cut(talla, br = c(5, 27.3, 35.3, 55), 
+                 labels = c('peque', 'med', 'grande')),
+    tallaFr = fct_rev(tallaF)
+  )
+
+# Resumen de la tabla
+truchas %&gt;% select(-c(zona, epoca, tallaFr)) %&gt;% summary()
+```
+
+```
+#&gt;     bacteria          talla       zonaF     epocaF      tallaF  
+#&gt;  Min.   :0.0000   Min.   : 5.40   a:63   lluvia:99   peque :65  
+#&gt;  1st Qu.:0.0000   1st Qu.:24.60   b:66   seco  :94   med   :64  
+#&gt;  Median :0.0000   Median :31.90   c:64               grande:64  
+#&gt;  Mean   :0.2591   Mean   :31.35                                 
+#&gt;  3rd Qu.:1.0000   3rd Qu.:36.90                                 
+#&gt;  Max.   :1.0000   Max.   :54.70
+```
+
+---
+
+layout: true
+
+### Exploración de datos
+
+---
+
+
+```r
+res.truchas &lt;- truchas %&gt;%
+  summarise(
+    n     = n(),
+    n_bac = sum(bacteria),
+    p_bac = mean(bacteria)   # = n_bac / n
+  ) 
+res.truchas
+```
+
+```
+#&gt; # A tibble: 1 x 3
+#&gt;       n n_bac p_bac
+#&gt;   &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1   193    50 0.259
+```
+
+---
+
+
+```r
+res.truchas &lt;- truchas %&gt;%
+  group_by(tallaF) %&gt;%
+  summarise(
+    n     = n(),
+    n_bac = sum(bacteria),
+    p_bac = mean(bacteria)   # = n_bac / n
+  ) 
+res.truchas
+```
+
+```
+#&gt; # A tibble: 3 x 4
+#&gt;   tallaF     n n_bac  p_bac
+#&gt;   &lt;fct&gt;  &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt;
+#&gt; 1 peque     65    32 0.492 
+#&gt; 2 med       64    12 0.188 
+#&gt; 3 grande    64     6 0.0938
+```
+
+---
+
+
+```r
+res.truchas &lt;- truchas %&gt;%
+  group_by(tallaF,zona) %&gt;%
+  summarise(
+    n     = n(),
+    n_bac = sum(bacteria),
+    p_bac = mean(bacteria)   # = n_bac / n
+  ) 
+res.truchas
+```
+
+```
+#&gt; # A tibble: 9 x 5
+#&gt; # Groups:   tallaF [3]
+#&gt;   tallaF zona      n n_bac  p_bac
+#&gt;   &lt;fct&gt;  &lt;chr&gt; &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt;
+#&gt; 1 peque  a        18     6 0.333 
+#&gt; 2 peque  b        25     9 0.36  
+#&gt; 3 peque  c        22    17 0.773 
+#&gt; 4 med    a        22     1 0.0455
+#&gt; 5 med    b        20     5 0.25  
+#&gt; 6 med    c        22     6 0.273 
+#&gt; 7 grande a        23     0 0     
+#&gt; 8 grande b        21     1 0.0476
+#&gt; 9 grande c        20     5 0.25
+```
+
+---
+
+
+```r
+res.truchas &lt;- truchas %&gt;%
+  group_by(tallaF,zona,epocaF) %&gt;%
+  summarise(
+    n     = n(),
+    n_bac = sum(bacteria),
+    p_bac = mean(bacteria)   # = n_bac / n
+  ) 
+res.truchas
+```
+
+```
+#&gt; # A tibble: 18 x 6
+#&gt; # Groups:   tallaF, zona [9]
+#&gt;    tallaF zona  epocaF     n n_bac  p_bac
+#&gt;    &lt;fct&gt;  &lt;chr&gt; &lt;fct&gt;  &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt;
+#&gt;  1 peque  a     lluvia    10     1 0.1   
+#&gt;  2 peque  a     seco       8     5 0.625 
+#&gt;  3 peque  b     lluvia     9     2 0.222 
+#&gt;  4 peque  b     seco      16     7 0.438 
+#&gt;  5 peque  c     lluvia    10     6 0.6   
+#&gt;  6 peque  c     seco      12    11 0.917 
+#&gt;  7 med    a     lluvia    15     0 0     
+#&gt;  8 med    a     seco       7     1 0.143 
+#&gt;  9 med    b     lluvia     8     0 0     
+#&gt; 10 med    b     seco      12     5 0.417 
+#&gt; 11 med    c     lluvia    14     3 0.214 
+#&gt; 12 med    c     seco       8     3 0.375 
+#&gt; 13 grande a     lluvia    12     0 0     
+#&gt; 14 grande a     seco      11     0 0     
+#&gt; 15 grande b     lluvia     8     0 0     
+#&gt; 16 grande b     seco      13     1 0.0769
+#&gt; 17 grande c     lluvia    13     2 0.154 
+#&gt; 18 grande c     seco       7     3 0.429
+```
+
+---
+
+
+```r
+ggplot(res.truchas, aes(x = tallaF, y = p_bac, fill = epocaF)) + 
+  geom_col(position = "dodge", color = "grey30", size = 0.3) +
+  facet_grid(~ zona, labeller = label_both) + 
+  scale_fill_manual(values = c("lightblue", "wheat")) +
+  labs(x = "Talla", fill = "Época", 
+       y = "Riesgo (prob) de infección")
+```
+
+&lt;img src="reg_logist_files/figure-html/unnamed-chunk-8-1.svg" style="display: block; margin: auto;" /&gt;
+
+---
+
+#### Gráfico de mosaico
+
+
+```r
+library(vcd)
+xtabs(~ epocaF + zonaF + bacteria + tallaF, data = truchas) %&gt;%
+  mosaic(highlighting = 3, highlighting_fill = c('gray70', 'salmon'))
+```
+
+&lt;img src="reg_logist_files/figure-html/unnamed-chunk-9-1.svg" style="display: block; margin: auto;" /&gt;
+
+
+---
+
+layout: false
+class: inverse middle center
+
+# Conceptos necesarios
+
+---
+
+## Propiedades de los logaritmos
+
+Para cualquier par de números reales positivos, `\(w\)` y `\(z\)`, tenemos que:
+
+&lt;br&gt;
+
+.content-box-purple[
+`$$\begin{array}{rl}
+(i)   &amp; \log_{b} (wz) = \log_{b} w + \log_{b} z \\[2ex]
+(ii)  &amp; \log_{b} (w/z) = \log_{b} w - \log_{b} z \\[2ex]
+(iii) &amp; \log_{b} w^c = c \log_{b} w \,,\hspace{1cm} \text{ para cualquier número real } c \\[2ex]
+(iv)  &amp; b^{\log_{b} w} = w
+\end{array}$$`
+]
+
+.orange[Nota:] En las expresiones anteriores, el número `\(b\)` es la base del logaritmo, tal como: 2, 10, ó  `\(e = 2.7183\)`.
+
+---
+
+## Propiedades de los exponentes
+
+&lt;br&gt;
+&lt;br&gt;
+
+.content-box-purple[
+`$$\begin{array}{rl}
+(i)   &amp; y^0 = 1  \;,\hspace{1cm} \text{ con } y \neq 0\\[2ex]
+(ii)  &amp; y^{-a} = \dfrac{1}{y^a} \;,\hspace{1cm} \text{ con } y \neq 0 \text{ y } a &gt; 0 \\[2ex]
+(iii) &amp; y^a \times y^b = y^{a + b}
+\end{array}$$`
+]
+
+
+---
+
+layout: true
+
+## Odds y Logit
+
+---
+
+&lt;br&gt;
+
+La probabilidad ( `\(\pi\)`) de un evento de interés (p.e, estar infectado con cierta bacteria) es un número que se mueve entre 0 y 1. Es decir,
+
+`$$0 &lt; \pi &lt; 1$$`
+Para el ejemplo de las truchas estimamos  que la probabilidad general  de estar infectado en la población bajo estudio fue:
+
+`$$\hat{\pi} = \dfrac{50}{193} = 0.259$$`
+Cuando el evento de interés es negativo (e.g, enfermarse, no sanar luego de un tratamiento, extinguirse, morir, perder, etc.), se usa la palabra "riesgo" para representar la probabilidad del evento. Así, para el ejemplo podemos decir que el .orange[riesgo] de infección fue de 0.259.
+
+---
+
+
+Una manera alternativa de medir la probabilidad es con el .orange[**Odds**], el cuál se obtiene como:
+
+`$$\mathtt{Odds} = \dfrac{\pi}{1-\pi}$$`
+
+Para el ejemplo, el odds de estar infectado se estima en:
+
+`$$\mathtt{Odds} = \dfrac{\hat{\pi}}{1-\hat{\pi}} = \dfrac{0.259}{1-0.259} = \dfrac{50}{(193 -50)} = 0.3497$$`
+--
+
+Para facilitar su interpretación podemos calcular la razón inversa, que equivale al odds de estar libre de la bacteria::
+
+`$$\mathtt{Odds}  = \dfrac{(193 -50)}{50}  = \dfrac{1-0.259}{0.259} = 2.86$$`
+
+Así, diremos que es casi 2.9 veces mas probable estar libre de la bacteria que tener la infección.
+
+---
+
+&lt;br&gt;
+
+
+El logartimo del Odds se le llama el .orange[**logit**]:
+
+`$$\mathtt{logit} = \log{\left(\dfrac{\pi}{1-\pi} \right)} = \log{\mathtt{Odds}}$$`
+
+Para el ejemplo, el logit de estar infectado se estima en:
+
+`$$\mathtt{logit} = \log{\left(\dfrac{0.259}{1-0.259} \right)} = \log{0.3497} = -1.051$$`
+&lt;br&gt;
+
+--
+
+.full-width[
+.content-box-purple[
+.orange[Importante:] En regresión logística es necesario moverse entre las tres formas: probabilidad, odds y logit.
+]
+]
+
+
+
+
+
+
+---
+
+layout: false
+class: inverse middle center
+
+# Regresión lógistica
+
+---
+
+## Introducción
+
+&lt;br&gt;
+
+- La regresión logística permite evaluar el efecto de una o más variables explicativas o predictoras (continuas o categóricas) sobre una respuesta **dicotómica** (con frecuencia, codificada con `\(0\)`'s y `\(1\)`'s).
+
+--
+
+- Dado que la respuesta es dicotómica, la regresión logística modela en realidad la **probabilidad** de que ocurra el evento de interés, es decir, `\(\pi = \mathtt{Prob}(Y = 1)\)`.
+
+--
+
+- Esta técnica aprovecha el hecho de que la relación entre la probabilidad `\(\pi\)` y el logaritmo del `\(\mathtt{Odds}\)` es de tipo logístico (en forma de "s") y acotada entre `\(0\)` y `\(1\)`.
+
+
+---
+
+layout: true
+## Relaciones y transformación logit
+
+---
+
+Para una **población** de `\(N\)` sujetos, si `\(Y_i\)` es `\(1\)` cuando el "sujeto" `\(i\)` tiene el evento interés y `\(0\)` cuando no, entonces:
+
+- El **Riesgo o prob.** de que ocurra el evento de interés: `$$\pi = \mathtt{Prob}(Y = 1) = \frac{1}{N}\sum Y_i$$`
+
+--
+
+- El **odds** de que ocurra el evento de interés es: `$$\mathtt{Odds} = \dfrac{\pi}{1-\pi} \quad\quad \rightarrow \quad\quad \pi = \dfrac{\mathtt{Odds}}{1 + \mathtt{Odds}}$$`
+
+--
+
+- El **logit** de que ocurra el evento de interés es: `$$\mathtt{logit} = \log \mathtt{Odds}  = \log \left(\dfrac{\pi}{1-\pi}\right)\quad\quad \rightarrow \quad \pi = \dfrac{e^{\mathtt{logit}}}{1+e^{\mathtt{logit}}} = \dfrac{1}{1+e^{-\mathtt{logit}}}$$`
+
+---
+
+### Rangos de variación
+
+&lt;br&gt;
+&lt;br&gt;
+
+`$$\begin{array}{l|c|r}
+\text{riesgo:} &amp; \pi &amp; 0 &lt; \pi &lt; 1 \\[2ex]
+\hline
+\text{odds:} &amp; \mathtt{odds} = \dfrac{\pi}{1-\pi} &amp; \mathtt{odds} &gt; 0 \\[2ex]
+\hline
+\text{logit:} &amp; \mathtt{logit} = \log \mathtt{Odds} &amp; -\infty &lt; \mathtt{logit} &lt; \infty
+\end{array}$$`
+
+---
+
+### Gráficos
+
+&lt;img src="reg_logist_files/figure-html/unnamed-chunk-10-1.svg" style="display: block; margin: auto;" /&gt;
+
+
+`$$\pi = \dfrac{e^{\mathtt{logit}}}{1 + e^{\mathtt{logit}}} = \dfrac{1}{1 + e^{-\mathtt{logit}}}$$`
+
+---
+
+layout: false
+layout: true
+## Modelo de regresión logística
+
+---
+
+&lt;br&gt;
+
+Si la probabilidad `\(\pi\)` se expresa en función del `\(\mathtt{logit}\)` como:
+
+`$$\pi = \dfrac{e^{\mathtt{logit}}}{1 + e^{\mathtt{logit}}} = \dfrac{1}{1 + e^{-\mathtt{logit}}}$$`
+
+El modelo de regresión logística propone que el `\(\mathtt{logit}\)` es una combinación lineal de los predictores `\(X_1, X_2, \ldots, X_p\)`, es decir,
+
+`$$\begin{eqnarray*} 
+  \log \left( \dfrac{\pi}{1-\pi} \right) &amp; = &amp; \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_p X_p  \\[1ex]
+   \mathtt{logit} &amp; = &amp; \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_p X_p
+\end{eqnarray*}$$`
+
+---
+
+&lt;br&gt;
+
+Por ejemplo, para **un sólo predictor**, el modelo de regresión logística sería:
+
+
+`$$\begin{eqnarray*} 
+  \log \left( \dfrac{\pi}{1-\pi} \right) &amp; = &amp; \beta_0 + \beta_1 X  \\[1ex]
+   \mathtt{logit} &amp; = &amp; \beta_0 + \beta_1 X
+\end{eqnarray*}$$`
+
+Y, en la escala de **probabilidad** sería:
+
+
+
+`$$\pi  = \dfrac{1}{1 + e^{-\mathtt{logit}}} = \dfrac{1}{1 + e^{-(\beta_0 + \beta_1 X)}}$$`
+
+---
+
+### Ejemplo 1: operando y graficando el modelo
+
+Para una situación hipótetica con un único predictor, `\(X\)`, continuo, suponga que:
+
+`$$\beta_0 = -3.00 \;, \quad \quad \beta_1 = 0.50$$`
+
+1. Escriba la ecuación logística en escala `\(\mathtt{logit}\)` y en escala de `\(\pi\)`.
+
+2. Calcule el `\(\mathtt{logit}\)` del evento de interés cuando `\(X = 4\)`
+
+3. Calcule el `\(\mathtt{odds}\)` del evento de interés cuando `\(X = 4\)`
+
+4. Calcule el riesgo, `\(\pi\)`, del evento de interés cuando `\(X = 4\)`
+
+5. Gráfique el `\(\mathtt{logit}\)` en función del predictor `\(X\)` para el rango `\(-5 &lt; X &lt; 20\)`
+
+6. Gráfique el riesgo, `\(\pi\)`, en función del predictor `\(X\)` para el rango `\(-5 &lt; X &lt; 20\)`
+
+---
+
+### Ejemplo 1: solución
+
+.panelset[
+
+.panel[.panel-name[1]
+
+Escriba la ecuación logística en escala `\(\mathtt{logit}\)` y en escala de `\(\pi\)`.
+
+En escala `\(\mathtt{logit}\)`:
+
+`$$\mathtt{logit} = -3 + 0.5 X$$`
+En escala `\(\pi\)`
+
+`$$\pi  = \dfrac{1}{1 + e^{-\mathtt{logit}}} = \dfrac{1}{1 + e^{-(-3 + 0.5 X)}}$$`
+]
+
+.panel[.panel-name[2,3,4]
+
+
+```r
+# Respuestas 2,3,4:
+# logit = beta0 + beta1*X
+tibble(
+  logit  = -3 + 0.5 * 4,           # resp. 2
+  odds   = exp(logit),             # resp. 3
+  prob1  = odds / (1 + odds),      # resp. 4
+  prob2  = 1 / (1 + exp(-logit)),  # resp. 4 (otra forma)
+)
+```
+
+```
+#&gt; # A tibble: 1 x 4
+#&gt;   logit  odds prob1 prob2
+#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+#&gt; 1    -1 0.368 0.269 0.269
+```
+
+]
+
+.panel[.panel-name[5]
+
+
+```r
+# Respuesta 5: codigo para grafico de logit vs. X
+tibble(
+  x     = seq(from = -5, to = 20, by = 0.1),
+  logit = -3 + 0.5 * x,
+  odds  = exp(logit),
+  prob  = 1 / (1 + exp(-logit)),
+) %&gt;%
+  ggplot(aes(x = x, y = logit)) + geom_path()
+```
+
+]
+
+.panel[.panel-name[6]
+
+
+```r
+# Respuesta 6: codigo para grafico de Prob vs. X
+tibble(
+  x     = seq(from = -5, to = 20, by = 0.1),
+  logit = -3 + 0.5 * x,
+  odds  = exp(logit),
+  prob  = 1 / (1 + exp(-logit)),
+) %&gt;%
+  ggplot(aes(x = x, y = prob)) + geom_path()
+```
+
+]
+
+]
+
+---
+
+### Ejemplo 2: interpretando coeficientes
+
+Para un escenario donde tenemos un sólo predictor, `\(X\)`, continuo, interprete los coeficientes `\(\beta_0\)` y `\(\beta_1\)`. Considere lo siguiente:
+
+1. Si `\(X = 0\)`, entonces `\(\mathtt{logit} = \beta_0\)` ¿Qué representa `\(\beta_0\)`? ¿Qué representa la exponencial de `\(\beta_0\)`, es decir, `\(e^{\beta_0}\)`?
+
+2. Calcule el `\(\mathtt{logit}\)` cuando `\(X = x_0\)` y cuando `\(X = x_0+1\)`. Luego reste los dos  `\(\mathtt{logit}\)` obtenidos (el 2do menos el 1ero). Con base en este resultado, ¿qué representa `\(\beta_1\)`?
+
+3. ¿Qué representa la exponencial de `\(\beta_1\)`?
+
+---
+
+### Ejemplo 2: solución
+
+.panelset[
+
+.panel[.panel-name[1]
+
+Si `\(X = 0\)`, entonces `\(\mathtt{logit} = \beta_0\)`. 
+
+- `\(\beta_0\)` representa el `\(\mathtt{logit}\)` del evento de interés cuando `\(X = 0\)`.
+
+- `\(e^{\beta_0} = \mathtt{odds}\)` del evento de interés cuando `\(X = 0\)`.
+
+
+]
+
+
+.panel[.panel-name[2]
+
+
+- Si `\(X = x_0\)`, entonces `\(\mathtt{logit}_0 = \beta_0 + \beta_1x_0\)`
+
+- Si `\(X = x_0 + 1\)`, entonces `\(\mathtt{logit}_1 = \beta_0 + \beta_1(x_0+1)\)`
+
+- Al restar el 2do. `\(\mathtt{logit}\)` menos el 1er. `\(\mathtt{logit}\)` se obtiene:
+
+`$$\begin{eqnarray*}\mathtt{logit}_1 - \mathtt{logit}_0 &amp; = &amp; \beta_0 + \beta_1(x_0+1) - \beta_0 - \beta_1x_0\\
+ &amp; = &amp; \beta_1 \end{eqnarray*}$$`
+
+- Así, `\(\beta_1\)` representa la diferencia (o el cambio) de (en) `\(\mathtt{logit}\)`'s cuando el predictor `\(X\)` incrementa `\(1\)` unidad.
+
+
+
+]
+
+
+.panel[.panel-name[3]
+
+.pull-left[
+
+Si `\(\beta_1 = \mathtt{logit}_1 - \mathtt{logit}_0\)`, entoces:
+
+`$$\begin{eqnarray*}e^{\beta_1}  &amp; = &amp; e^{\mathtt{logit}_1 - \mathtt{logit}_0}\\[2ex]
+&amp; = &amp; e^{\mathtt{logit}_1} \times e^{-\mathtt{logit}_0} \\[2ex]
+&amp; = &amp; e^{\mathtt{logit}_1} \times \dfrac{1}{e^{\mathtt{logit}_0}}\\[2ex]
+&amp; = &amp; \dfrac{\mathtt{odds}_1}{\mathtt{odds}_0} = \mathtt{OR}
+\end{eqnarray*}$$`
+
+]
+
+.pull-right[
+
+**Interpretación**
+
+`\(e^{\beta_1} = \dfrac{\mathtt{odds}_1}{\mathtt{odds}_0} = \mathtt{OR}\)`
+
+La exponencial de `\(\beta_1\)` es la **razón de odds** que compara el odds del evento de interés cuando `\(X = x_0+1\)` con respecto al odds del evento de interés cuando `\(X = x_0\)`
+
+]
+
+]
+
+]
+
+---
+
+### Ejemplo 3: interpretando coeficientes
+
+Para un escenario con un único predictor, `\(X\)`, continuo, suponga que:
+
+`$$\beta_0 = -3.00 \;, \quad \quad \beta_1 = 0.50$$`
+
+.pull-left[
+`1.` Interprete `\(\beta_0 = -3\)`.
+
+  .can-edit[Escriba aquí la respuesta]
+
+`2.` Interprete `\(e^{\beta_0} = e^{-3} = 0.0498\)`.
+
+  .can-edit[Escriba aquí la respuesta]
+]
+
+
+.pull-right[
+`3.` Interprete `\(\beta_1 = 0.5\)`
+
+  .can-edit[Escriba aquí la respuesta]
+  
+`4.` Interprete `\(e^{\beta_1} = e^{0.5} = 1.65\)`
+
+  .can-edit[Escriba aquí la respuesta]
+]
+
+
+---
+
+### Generalización de los ejemplos anteriores
+
+Para el modelo en escala `\(\mathtt{logit}\)`:
+
+`$$\mathtt{logit}  =  \beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_p X_p$$`
+
+Tenemos que:
+
+El `\(\mathtt{odds}\)` del evento de interés para una combinación particular de valores en `\(X_1, X_2, \ldots, X_p\)` es: 
+
+`$$\mathtt{odds} = e^{\mathtt{logit}} = e^{\beta_0 + \beta_1 X_1 + \beta_2 X_2 + \cdots + \beta_p X_p}$$`
+
+La **razón de odds** ( `\(\mathtt{OR}\)`) que compara el odds del evento de interés para `\(X_1 = A\)` con el odds del evento de interés para `\(X_1 = B\)`, y **manteniendo los demas predictores constantes** es:
+
+`$$\mathtt{OR} = e^{\beta_1(A - B)}$$`
+
+---
+
+### Ejemplo 4: Dos predictores
+
+
+
+
+&lt;br&gt;
+
+El modelo ajustado de regresión logística para el ejemplo de la infección bacteriana en las truchas de sapomocho incluyendo los predictores `talla` y `epocaF` fue:
+
+`$$\mathtt{logit}  =  2.739 -0.159 \mathtt{talla} + 1.479 \mathtt{epocaF}$$`
+
+donde el `\(\mathtt{logit}\)` es el `\(\mathtt{logit}\)` de la infección bacteriana en las truchas, la `talla` (en mm) es de tipo continua y la `epocaF` es tipo categórica con:
+
+`$$\mathtt{epocaF} = \left\lbrace \begin{array}{ll} 
+1 &amp; \text{si seca} \\
+0 &amp; \text{si lluvia}
+\end{array} \right.$$`
+
+---
+
+### Ejemplo 4: Dos predictores (cont.)
+
+1. Calcule el riesgo de infección que tendrían truchas que esten en época seca y con una talla de 8 mm. Comparelo con el mismo riesgo si están en época lluviosa.
+
+2. Interprete `\(\hat{\beta}_0 = 2.739\)` y `\(e^{\hat{\beta}_0} = 15.472\)`
+
+3. Interprete `\(\hat{\beta}_1 = -0.159\)` y `\(e^{\hat{\beta}_1} = 0.853\)`
+
+4. Interprete `\(\hat{\beta}_2 = 1.479\)` y `\(e^{\hat{\beta}_2} = 4.389\)`
+
+5. Calcule la razón de odds que compara el odds de la infección cuando la época permanece constante y la talla disminuye de 40 mm a 20 mm
+
+6. Dibuje el `\(\mathtt{logit}\)` de la infección contra las predictoras
+
+6. Dibuje el riego ( `\(\pi\)`) de la infección contra las predictoras.
+
+---
+
+### Ejemplo 4: Dos predictores - Solución
+
+.panelset[
+
+.panel[.panel-name[1]
+
+
+```r
+# Coeficientes parciales de reg. logistica
+b0 &lt;-   2.739
+b1 &lt;-  -0.159
+b2 &lt;-   1.479
+
+# Calculos
+tibble(
+  talla  = c(8,8),
+  epocaF = c('seca', 'lluvia'),
+  epocaD = c(1,0),
+  logit  = b0 + b1*talla + b2*epocaD,
+  riesgo = 1 / (1 + exp(-logit))
+)
+```
+
+]
+
+.panel[.panel-name[1-cont.]
+
+
+```
+#&gt; # A tibble: 2 x 5
+#&gt;   talla epocaF epocaD logit riesgo
+#&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+#&gt; 1     8 seca        1  2.95  0.950
+#&gt; 2     8 lluvia      0  1.47  0.813
+```
+
+Observe como el `\(\mathtt{logit}\)`  y el riesgo disminuyen cuando se cambia de época seca a época lluviosa.
+
+]
+
+.panel[.panel-name[2]
+
+**Interpretación** `\(\hat{\beta}_0 = 2.739\)`
+
+El `\(\mathtt{logit}\)` de la infección cuando la talla es 0 mm y la época es la lluviosa es 2.739.
+
+**Interpretación** `\(e^{\hat{\beta}_0} = 15.472\)`
+
+El odds de la infección cuando la talla es 0 mm y la época es la lluviosa es 15.472
+
+]
+
+.panel[.panel-name[3]
+
+**Interpretación** `\(\hat{\beta}_1 = -0.159\)`
+
+El `\(\mathtt{logit}\)` de la infección disminuye 0.159 unidades cuando la talla incrementa 1 mm y la **época permanece constante**.
+
+**Interpretación** `\(e^{\hat{\beta}_1} = 0.853\)`
+
+Cuando la talla .orange[incrementa] 1 mm, el odds de la infección disminuye por un factor multiplicativo de 0.853 y la **época permanece constante**.
+
+Cuando la talla .orange[disminuye] 1 mm, el odds de la infección aumenta por un factor multiplicativo de 1.172 y la **época permanece constante**
+
+]
+
+.panel[.panel-name[3-cont.]
+
+**Interpretación** `\(e^{\hat{\beta}_1} = 0.853\)`
+
+Cuando la talla .orange[disminuye] 1 mm, el odds de la infección aumenta por un factor multiplicativo de 1.172 y la **época permanece constante**
+
+Es decir, el odds de la infección para cierta talla es 1.172 veces mayor que el odds de la infección para una talla un mm mayor.
+
+**Nota:** Cuando el cambio de una 1 unidad en un predictor continuo es pequeño comparado con el rango del predictor, es pertinente reportar un OR para un cambio mayor en el predictor, p.e, una desviación estándar del predictor. Ver pregunta (5) en este mismo ejemplo.
+
+]
+
+.panel[.panel-name[4]
+
+**Interpretación** `\(\hat{\beta}_2 = 1.479\)`
+
+El `\(\mathtt{logit}\)` de la infección aumenta 1.479 unidades cuando se cambia de época lluviosa (0) a época seca (1) y la **talla permanece constante**.
+
+**Interpretación** `\(e^{\hat{\beta}_2} = 4.389\)`
+
+La razón de odds que compara el odds de la infección en época seca contra el odds de la infección en época lluviosa es 4.389. 
+
+El odds de la infección en época seca es `\(4.389\)` veces mayor que el odds de la infección en época lluviosa.
+
+]
+
+.panel[.panel-name[5]
+
+La **razón de odds** ( `\(\mathtt{OR}\)`) que compara el odds de la infección para `\(\mathtt{talla} = 20\)` con el odds de la infección para `\(\mathtt{talla} = 40\)`, y **manteniendo la época constante** es:
+
+`$$\mathtt{OR} = e^{\hat{\beta}_1(20 - 40)} = e^{-20(-0.159)} = 24$$`
+
+.pull-left[
+
+```
+#&gt; # A tibble: 2 x 4
+#&gt;   talla epocaD  logit   odds
+#&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+#&gt; 1    20      0 -0.441 0.643 
+#&gt; 2    40      0 -3.62  0.0268
+```
+]
+
+.pull-right[
+
+```r
+0.643 / 0.0268   # OR
+```
+
+```
+#&gt; [1] 23.99254
+```
+]
+
+]
+
+.panel[.panel-name[6]
+
+
+```r
+# Se genera tabla con predictores, logit y riesgo
+dp &lt;- expand_grid(
+  talla  = 5:55,
+  epocaD = c(0, 1)
+) %&gt;%
+  mutate(
+    logit   = b0 + b1*talla + b2*epocaD,
+    riesgo  = 1 / (1 + exp(-logit)),
+    epoca   = ifelse(epocaD == 0, 'lluvia', 'seca')
+  )
+```
+
+]
+
+.panel[.panel-name[6-cont.]
+
+&lt;img src="reg_logist_files/figure-html/unnamed-chunk-20-1.svg" style="display: block; margin: auto;" /&gt;
+
+]
+
+
+.panel[.panel-name[7]
+
+&lt;img src="reg_logist_files/figure-html/unnamed-chunk-21-1.svg" style="display: block; margin: auto;" /&gt;
+
+
+]
+
+]
+
+---
+layout: false
+class: inverse middle center
+
+# Estimación de parámetros en regresión logística
+
+---
+
+## Máxima verosimilitud vs. Mínimos cuadrados
+
+
+Dos métodos tradicionales para estimación de parámetros en un modelo lineal son el de .orange[mínimos cuadrados] y el de .orange[máxima verosimilitud]. La regresión logística usa el segundo.
+
+--
+
+.pull-left[
+
+.full-width[.content-box-yellow[&lt;h3&gt;Mínimos cuadrados&lt;/h3&gt;
+
+Se seleccionan aquellos valores para los parámetros del modelo que minimicen la distancia cuadrada entre el valor observado y el valor predicho por el modelo.
+]]
+
+]
+
+--
+
+.pull-right[
+
+.full-width[.content-box-yellow[&lt;h3&gt;Máxima verosimilitud&lt;/h3&gt;
+
+Se seleccionan aquellos valores para los parámetros del modelo que hagan más probable la muestra observada.
+]]
+
+]
+
+---
+
+name: mle
+
+## Máxima verosimilitud
+
+---
+
+template: mle
+
+.full-width[.content-box-yellow[Dada una muestra de datos tomada desde una población, se seleccionan aquellos valores para los parámetros del modelo que maximicen la verosimilitud de observar dichos datos.]]
+
+--
+
+- Se debe asumir un modelo de probabilidad para la variable (respuesta) bajo estudio en la población. P.e., para una respuesta binaria, el modelo Bernoulli o binomial.
+
+--
+
+- Se debe construir la **función de verosimilitud** de los datos (o muestra) observados, la cual se basa en el modelo de probabilidad asumido. Al maximizar dicha función se encuentran los estimadores de máxima verosimilitud.
+
+---
+
+class: inverse middle center
+
+# Ajustando el modelo en R
+
+.large[El comando `glm` (paquete: `stats`) ajusta un modelo de regresión logística mediante el método de máxima verosimilitud.]
+
+---
+
+layout: true
+## Organización de datos y ajuste
+
+---
+
+El comando `glm` admite la variable respuesta y la tabla con los datos en diferentes formatos:
+
+- Bajo una organización **cruda** donde cada fila es un "sujeto". En este caso, la **respuesta** puede venir codificada como `\(\{0, 1\}\)`, `TRUE`, `FALSE` o como un factor con dos niveles.
+
+--
+
+- Bajo una organización **agrupada** donde cada fila representa una categoría (o una combinación de categorías) de la(s) variable(s) explicativa(s). En este caso, la **respuesta** puede ser:
+ * una matriz con dos columnas: número de éxitos y número de fracasos.
+ * la proporción de éxitos, pero debe usarse el argumento `weights` para indicar el tamaño de la muestra en cada fila de la tabla.
+
+---
+
+Bajo una organización **cruda**, desde la tabla `truchas`:
+
+
+```r
+# Modelo solo con beta0
+m0 &lt;- glm(bacteria ~ 1, data = truchas, family = binomial)
+summary(m0)$coef
+```
+
+--
+
+
+```
+#&gt;              Estimate Std. Error   z value     Pr(&gt;|z|)
+#&gt; (Intercept) -1.050822  0.1642953 -6.395931 1.595726e-10
+```
+
+--
+
+
+```r
+# Modelo con beta0 y beta1 para epoca
+m1 &lt;- glm(bacteria ~ epocaF, data = truchas, family = binomial)
+summary(m1)$coef
+```
+
+--
+
+
+```
+#&gt;              Estimate Std. Error   z value     Pr(&gt;|z|)
+#&gt; (Intercept) -1.803594  0.2884324 -6.253091 4.024081e-10
+#&gt; epocaFseco   1.326670  0.3580676  3.705082 2.113222e-04
+```
+
+---
+
+Bajo una organización **agrupada**, primero debemos agrupar los datos:
+
+.pull-left[
+
+```r
+# Se agrupan los datos por epoca
+truchasg1 &lt;- truchas %&gt;%
+  group_by(epocaF) %&gt;%
+  summarise(
+    n      = n(),
+    bac    = sum(bacteria),
+    no.bac = n - bac
+  ) %&gt;% ungroup()
+```
+]
+
+--
+
+
+.pull-right[
+
+```r
+truchasg1
+```
+
+```
+#&gt; # A tibble: 2 x 4
+#&gt;   epocaF     n   bac no.bac
+#&gt;   &lt;fct&gt;  &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt;
+#&gt; 1 lluvia    99    14     85
+#&gt; 2 seco      94    36     58
+```
+]
+
+--
+
+
+```r
+m2 &lt;- glm(cbind(bac, no.bac) ~ epocaF, data = truchasg1, 
+          family = binomial)
+summary(m2)$coef
+```
+
+--
+
+
+```
+#&gt;              Estimate Std. Error   z value     Pr(&gt;|z|)
+#&gt; (Intercept) -1.803594  0.2884324 -6.253090 4.024111e-10
+#&gt; epocaFseco   1.326670  0.3580676  3.705082 2.113226e-04
+```
+
+---
+
+Bajo una organización **agrupada**, primero debemos agrupar los datos:
+
+.pull-left[
+
+```r
+# Se agrupan los datos por epoca
+truchasg1 &lt;- truchas %&gt;%
+  group_by(epocaF) %&gt;%
+  summarise(
+    n      = n(),
+    bac    = sum(bacteria),
+    no.bac = n - bac
+  ) %&gt;% ungroup()
+```
+]
+
+.pull-right[
+
+```r
+truchasg1
+```
+
+```
+#&gt; # A tibble: 2 x 4
+#&gt;   epocaF     n   bac no.bac
+#&gt;   &lt;fct&gt;  &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt;
+#&gt; 1 lluvia    99    14     85
+#&gt; 2 seco      94    36     58
+```
+]
+
+
+```r
+m2 &lt;- glm(bac / n ~ epocaF, data = truchasg1, weights = n,
+          family = binomial)  # usando el argumento weights
+summary(m2)$coef
+```
+
+--
+
+
+```
+#&gt;              Estimate Std. Error   z value     Pr(&gt;|z|)
+#&gt; (Intercept) -1.803594  0.2884324 -6.253090 4.024111e-10
+#&gt; epocaFseco   1.326670  0.3580676  3.705082 2.113226e-04
+```
+
+
+---
+
+layout: false
+layout: true
+
+## Obteniendo algunos cálculos
+
+---
+
+Imprimir **coeficientes**
+
+
+```r
+m1$coef    # para imprimir coeficientes
+```
+
+```
+#&gt; (Intercept)  epocaFseco 
+#&gt;   -1.803594    1.326670
+```
+
+--
+
+**Exponenciar** coeficientes para obtener **odds** y **razones de odds**
+
+
+```r
+exp(m1$coef)    # para imprimir coeficientes
+```
+
+```
+#&gt; (Intercept)  epocaFseco 
+#&gt;   0.1647059   3.7684729
+```
+
+
+---
+
+Imprimir **predicciones** en escala **logit**:
+
+
+```r
+d &lt;- data.frame(epocaF = c('lluvia', 'seco') )
+predict(m1, newdata = d, type = 'link') 
+```
+
+```
+#&gt;          1          2 
+#&gt; -1.8035939 -0.4769241
+```
+
+--
+
+Imprimir **predicciones** en escala de **probabilidad**:
+
+
+```r
+predict(m1, newdata = d, type = 'response') 
+```
+
+```
+#&gt;         1         2 
+#&gt; 0.1414141 0.3829787
+```
+
+---
+
+Desde el paquete .orange[emmeans] también podemos pedir **predicciones** en escala **logit**:
+
+
+```r
+library(emmeans)
+emmeans(m1, spec = 'epocaF' )
+```
+
+```
+#&gt;  epocaF emmean    SE  df asymp.LCL asymp.UCL
+#&gt;  lluvia -1.804 0.288 Inf    -2.369   -1.2383
+#&gt;  seco   -0.477 0.212 Inf    -0.893   -0.0611
+#&gt; 
+#&gt; Results are given on the logit (not the response) scale. 
+#&gt; Confidence level used: 0.95
+```
+
+---
+
+También desde el paquete .orange[emmeans] podemos pedir **predicciones** en escala de **probabilidad**:
+
+
+```r
+emmeans(m1, spec = 'epocaF', type = 'response' )
+```
+
+```
+#&gt;  epocaF  prob     SE  df asymp.LCL asymp.UCL
+#&gt;  lluvia 0.141 0.0350 Inf    0.0856     0.225
+#&gt;  seco   0.383 0.0501 Inf    0.2905     0.485
+#&gt; 
+#&gt; Confidence level used: 0.95 
+#&gt; Intervals are back-transformed from the logit scale
+```
+
+---
+
+Compare las probabilidades desde el modelo obtenidas atrás con las probabilidades calculadas manualmente:
+
+
+
+```r
+truchasg1 %&gt;% mutate(prob.bac = bac / n)
+```
+
+```
+#&gt; # A tibble: 2 x 5
+#&gt;   epocaF     n   bac no.bac prob.bac
+#&gt;   &lt;fct&gt;  &lt;int&gt; &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;
+#&gt; 1 lluvia    99    14     85    0.141
+#&gt; 2 seco      94    36     58    0.383
+```
+
+
+---
+
+El paquete .orange[emmeans] también permite solicitar contrastes entre los niveles de un predictor en escala **logit**
+
+
+
+```r
+emmeans(m1, specs = 'epocaF', contr = 'pairwise')
+```
+
+```
+#&gt; $emmeans
+#&gt;  epocaF emmean    SE  df asymp.LCL asymp.UCL
+#&gt;  lluvia -1.804 0.288 Inf    -2.369   -1.2383
+#&gt;  seco   -0.477 0.212 Inf    -0.893   -0.0611
+#&gt; 
+#&gt; Results are given on the logit (not the response) scale. 
+#&gt; Confidence level used: 0.95 
+#&gt; 
+#&gt; $contrasts
+#&gt;  contrast      estimate    SE  df z.ratio p.value
+#&gt;  lluvia - seco    -1.33 0.358 Inf -3.705  0.0002 
+#&gt; 
+#&gt; Results are given on the log odds ratio (not the response) scale.
+```
+
+---
+
+O exponenciar para generar razones de odds:
+
+
+```r
+emmeans(m1, specs = 'epocaF', 
+        contr = 'pairwise', type = 'response')
+```
+
+```
+#&gt; $emmeans
+#&gt;  epocaF  prob     SE  df asymp.LCL asymp.UCL
+#&gt;  lluvia 0.141 0.0350 Inf    0.0856     0.225
+#&gt;  seco   0.383 0.0501 Inf    0.2905     0.485
+#&gt; 
+#&gt; Confidence level used: 0.95 
+#&gt; Intervals are back-transformed from the logit scale 
+#&gt; 
+#&gt; $contrasts
+#&gt;  contrast      odds.ratio    SE  df z.ratio p.value
+#&gt;  lluvia / seco      0.265 0.095 Inf -3.705  0.0002 
+#&gt; 
+#&gt; Tests are performed on the log odds ratio scale
+```
+
+---
+
+Para tener mayor control sobre los contrastes solicitados, pase el resultado de `emmeans` al comando `contrast`:
+
+
+```r
+emmeans(m1, specs = 'epocaF', type = 'response') %&gt;%
+  contrast(method = 'revpairwise')
+```
+
+```
+#&gt;  contrast      odds.ratio   SE  df z.ratio p.value
+#&gt;  seco / lluvia       3.77 1.35 Inf 3.705   0.0002 
+#&gt; 
+#&gt; Tests are performed on the log odds ratio scale
+```
+
+--
+
+
+```r
+emmeans(m1, specs = 'epocaF', type = 'response') %&gt;%
+  contrast(method = list('seco.vs.lluvia' = c(-1,1)))
+```
+
+```
+#&gt;  contrast       odds.ratio   SE  df z.ratio p.value
+#&gt;  seco.vs.lluvia       3.77 1.35 Inf 3.705   0.0002 
+#&gt; 
+#&gt; Tests are performed on the log odds ratio scale
+```
+
+
+---
+
+layout: false
+layout: true
+
+## Ejercicios
+
+---
+
+#### Ejercicio 1
+
+* El data.frame `truchas` esta en un formato de datos **crudos**. Convierta los datos a un formato **agrupado** de acuerdo a `epocaF`, `zonaF` y `tallaFr` usando `group_by` y `summarise`. Imprima la tabla nueva. Identifique en la tabla el número de filas y entienda porqué quedó con ese número de filas.
+
+* Use los datos agrupados para ajustar un modelo de regresión logística que evaluen el efecto conjunto de la `epocaF`, `zonaF` y `tallaFr` sobre el riesgo de infección bacteriana. Imprima la tabla de coeficientes del modelo ajustado. En su cuaderno, escriba el modelo ajustado en escala **logit**. Identifique las categorías o niveles de cada variable explicativa y cuál es el nivel de referencia en cada caso.
+
+* Presente una interpretación de la exponencial de cada coeficiente, es decir de `\(e^{\hat{\beta_j}}\)` para `\(j = \{0,1,2,3,4,5\}\)`.
+
+---
+
+#### Ejercicio 1 (cont.)
+
+* Desde el modelo ajustado, obtenga las predicciones en escala de odds y de riesgo para las siguientes cuatro combinaciones de valores de las predictoras:
+
+ 
+ ```r
+ expand_grid(
+  epocaF = 'seco',
+  zonaF  = c('a', 'b'),
+  tallaFr = c('peque', 'grande')
+ )
+ ```
+
+* Use los comandos `emmeans` y `contrast` (del paquete `emmeans`) para imprimir tablas de OR's, una para el factor `epocaF`, otra para el factor `zonaF` y otra para el factor `tallaFr`. 
+
+
+
+
+
+
+---
+
+#### Ejercicio 2
+
+El paquete .orange[GGally] tiene comandos que extienden el paradigma de `ggplot2` para diferentes necesidades gráficas en modelación estadística.
+
+- Busque la ayuda del comando `ggcoef` en el siguiente [enlace](http://ggobi.github.io/ggally/articles/ggcoef.html).
+
+- Mediante los ejemplos de la página de ayuda consultada, proponga un gráfico de los coeficientes del modelo ajustado en el ejercicio 1.
+
+---
+
+layout: false
+class: inverse middle center
+
+# Pruebas de hipótesis en regresión logística
+
+---
+
+class: middle left
+
+
+.Large[
+- Pruebas basadas en el **Deviance**
+
+- Pruebas basadas en el estadístico `\(Z\)` (asintótico)
+]
+
+
+---
+
+## Deviance
+
+El **Deviance** es un estadístico obtenido desde una diferencia de **verosimilitudes**:
+
+`$$D = -2(\log \hat{L} - \log \hat{L}_s)$$`
+
+donde `\(\hat{L}\)` es la verosimilitud estimada para un modelo propuesto, y `\(\hat{L}_s\)` es la verosimilitud estimada desde un modelo llamado **saturado**. Un modelo **saturado** es uno que, por definición, tiene un ajuste perfecto a los datos.
+
+Entre mayor sea `\(D\)`, más grande es la diferencia entre la verosimilitud del modelo propuesto y a aquella obtenida desde un modelo que tiene un ajuste perfecto a los datos.
+
+--
+
+El **Deviance** se puede usar de manera equivalente a la **suma de cuadrados del error** en modelos lineales donde la respuesta se supone normal, y por ende, se puede usar para probar la significancia de modelos propuestos con una combinación diferente de variables explicativas.
+
+---
+
+layout: true
+
+### Ejemplo
+
+---
+
+
+```r
+m1 &lt;- glm(bacteria ~ tallaFr, data = truchas, family = binomial)
+anova(m1, test = 'LRT')
+```
+
+```
+#&gt; Analysis of Deviance Table
+#&gt; 
+#&gt; Model: binomial, link: logit
+#&gt; 
+#&gt; Response: bacteria
+#&gt; 
+#&gt; Terms added sequentially (first to last)
+#&gt; 
+#&gt; 
+#&gt;         Df Deviance Resid. Df Resid. Dev  Pr(&gt;Chi)    
+#&gt; NULL                      192     220.82              
+#&gt; tallaFr  2   29.134       190     191.69 4.716e-07 ***
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+
+```r
+m2 &lt;- glm(bacteria ~ tallaFr + zonaF, data = truchas, family = binomial)
+anova(m2, test = 'LRT')
+```
+
+```
+#&gt; Analysis of Deviance Table
+#&gt; 
+#&gt; Model: binomial, link: logit
+#&gt; 
+#&gt; Response: bacteria
+#&gt; 
+#&gt; Terms added sequentially (first to last)
+#&gt; 
+#&gt; 
+#&gt;         Df Deviance Resid. Df Resid. Dev  Pr(&gt;Chi)    
+#&gt; NULL                      192     220.82              
+#&gt; tallaFr  2   29.134       190     191.69 4.716e-07 ***
+#&gt; zonaF    2   19.703       188     171.99 5.268e-05 ***
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+
+```r
+m3 &lt;- glm(bacteria ~ tallaFr + zonaF + epocaF, data = truchas, 
+          family = binomial)
+anova(m3, test = 'LRT')
+```
+
+```
+#&gt; Analysis of Deviance Table
+#&gt; 
+#&gt; Model: binomial, link: logit
+#&gt; 
+#&gt; Response: bacteria
+#&gt; 
+#&gt; Terms added sequentially (first to last)
+#&gt; 
+#&gt; 
+#&gt;         Df Deviance Resid. Df Resid. Dev  Pr(&gt;Chi)    
+#&gt; NULL                      192     220.82              
+#&gt; tallaFr  2   29.134       190     191.69 4.716e-07 ***
+#&gt; zonaF    2   19.703       188     171.99 5.268e-05 ***
+#&gt; epocaF   1   17.320       187     154.67 3.158e-05 ***
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+---
+
+El comando `anova` también permite comparar modelos anidados:
+
+
+```r
+anova(m2, m3, test = 'LRT')
+```
+
+```
+#&gt; Analysis of Deviance Table
+#&gt; 
+#&gt; Model 1: bacteria ~ tallaFr + zonaF
+#&gt; Model 2: bacteria ~ tallaFr + zonaF + epocaF
+#&gt;   Resid. Df Resid. Dev Df Deviance  Pr(&gt;Chi)    
+#&gt; 1       188     171.99                          
+#&gt; 2       187     154.67  1    17.32 3.158e-05 ***
+#&gt; ---
+#&gt; Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+```
+
+
+---
+
+layout: false
+class: inverse middle left
+
+# Otros aspectos en regresión logística
+
+.large[
+- Interacciones entre variables explicativas
+- Procedimientos de selección de modelos
+- Evaluando el ajuste del modelo:
+ * Pruebas de bondad de ajuste
+ * Revisión de residuales y gráficos de diagnóstico
+ * Sobredispersión
+- Curvas ROC: Discriminación o clasificación
+]
+
+---
+
+class: inverse middle center
+
+# Discriminación (o clasificación) con regresión logística
+
+---
+
+layout: true
+## Usando las predicciones para clasificar
+
+---
+
+&lt;br&gt;
+
+Las **predicciones** (en escala de probabilidad) de una regresión logística se pueden usar para clasificar cada observación en éxito (1) o fracaso (0). 
+
+--
+
+Para hacer esto debemos establecer un valor umbral, ó punto de corte, de probabilidad (digamos `\(p_0\)`) de tal modo que si una observación tiene `\(\hat{\pi} &gt; p_0 \rightarrow \text{éxito}\)`.
+
+--
+
+La clasificación predicha por el modelo para cada observación  se puede comparar con el estado real de las observaciones mediante una tabla de frecuencias `\(2\times 2\)`.
+
+Desde la tabla `\(2\times 2\)` se puede calcular la **sensibilidad** y **especificadad** del modelo (+ `\(p_0\)`) para discriminar las observaciones.
+
+---
+
+### Ejemplo
+
+Se ejecuta un modelo, se calculan predicciones y se realiza una clasificación usando un punto de corte de `\(p_0 = 0.5\)`
+
+
+```r
+m &lt;- glm(bacteria ~ tallaFr + zonaF + epocaF, data = truchas, 
+          family = binomial)
+
+# Tabla con datos + predicciones
+p0 &lt;- 0.5   # umbral o punto de corte de prob para clasificacion
+d &lt;- truchas %&gt;%
+  mutate(
+    prob.pred      = predict(m, type = 'response'),
+    bacteria.pred  = ifelse(prob.pred &gt; p0, 1, 0)
+  )
+```
+
+
+---
+
+&lt;h3&gt;Ejemplo&lt;/h3&gt;
+
+Impresión de la tabla de predicciones generada atrás
+
+
+```r
+d %&gt;% select(bacteria, prob.pred, bacteria.pred)
+```
+
+```
+#&gt; # A tibble: 193 x 3
+#&gt;    bacteria prob.pred bacteria.pred
+#&gt;       &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt;
+#&gt;  1        0    0.0111             0
+#&gt;  2        0    0.0111             0
+#&gt;  3        0    0.126              0
+#&gt;  4        0    0.126              0
+#&gt;  5        1    0.126              0
+#&gt;  6        0    0.0278             0
+#&gt;  7        0    0.126              0
+#&gt;  8        0    0.0278             0
+#&gt;  9        0    0.0111             0
+#&gt; 10        0    0.0278             0
+#&gt; # … with 183 more rows
+```
+
+---
+
+&lt;h3&gt;Ejemplo&lt;/h3&gt;
+
+Creación de tabla `\(2\times 2\)` que compara la clasificación predicha (`bacteria.pred`) con el estado real (`bacteria`) de las observaciones:
+
+
+```r
+xtabs(~ bacteria.pred + bacteria, data = d) %&gt;%
+  addmargins()
+```
+
+```
+#&gt;              bacteria
+#&gt; bacteria.pred   0   1 Sum
+#&gt;           0   124  23 147
+#&gt;           1    19  27  46
+#&gt;           Sum 143  50 193
+```
+
+---
+
+&lt;h3&gt;Ejemplo&lt;/h3&gt;
+
+.pull-left[
+
+**Sensibilidad**
+
+Capacidad que tiene el test (modelo de reg. logística + `\(p_0\)`) para identificar correctamente a los sujetos **con** el evento de interés. Es la prob. de que un sujeto que en realidad **tiene** el evento de interés  sea clasificado como tal por el modelo. Para el ejemplo:
+
+`$$se = \dfrac{27}{50} = 0.54$$`
+
+]
+
+.pull-right[
+
+**Especificidad**
+
+Capacidad que tiene el modelo de reg. logística (+ `\(p_0\)`) para identificar correctamente a los sujetos **sin** el evento de interés. Es la prob. de que un sujeto que en realidad **no** tiene el evento de interés sea clasificado como tal por el modelo.  Para el ejemplo:
+
+`$$esp = \dfrac{124}{143} = 0.867$$`
+
+]
+
+---
+
+### Curva ROC
+
+Note que la clasificación predicha, y por tanto la sensibilidad ( `\(se\)`) y especificidad ( `\(esp\)`), dependen del punto de corte elegido ( `\(p_0\)`).
+
+--
+
+En la práctica no se define un sólo punto de corte si no que se prueba un rango amplio de valores (p.e., `\(0.1 &lt; p_0 &lt; 0.90\)`), y para cada valor se genera una tabla `\(2\times 2\)` de la cual se calculan la `\(se\)` y la `\(esp\)`.
+
+--
+
+La **curva ROC** permite entonces revisar el patrón de la `\(se\)` y la `\(esp\)` para **todos** los puntos de corte evaluados.
+
+--
+
+La **curva ROC** grafica puntos en las coordenadas `\(X = 1 - esp\)` vs `\(Y = se\)`, para cada punto de corte evaluado.  La unión de los puntos conforman la curva ROC.
+
+---
+
+layout: false
+layout: true
+
+### Calculando la curva ROC en R
+
+---
+
+&lt;br&gt;
+&lt;br&gt;
+&lt;br&gt;
+
+.large[
+- Comando `ROC` del paquete .orange[Epi], 
+
+- Paquete .orange[pROC]
+
+- Paquete: .orange[ROCR]
+
+]
+
+---
+
+Aquí usaremos el comando `roc` (paquete .orange[pROC]):
+
+
+```r
+library(pROC)
+res_roc &lt;- roc(data = d, response = bacteria, predictor = prob.pred)
+names(res_roc)  # para ver los nombres contenidos en el resultado
+```
+
+```
+#&gt;  [1] "percent"            "sensitivities"      "specificities"     
+#&gt;  [4] "thresholds"         "direction"          "cases"             
+#&gt;  [7] "controls"           "fun.sesp"           "auc"               
+#&gt; [10] "call"               "original.predictor" "original.response" 
+#&gt; [13] "predictor"          "response"           "levels"
+```
+
+---
+
+
+```r
+# Extraemos algunos resultados:
+tab_roc &lt;- with(res_roc, 
+     tibble( corte   = thresholds, 
+             sen     = sensitivities, 
+             esp     = specificities,
+             youden  = sen + esp - 1
+          )
+)
+dim(tab_roc)  # nro. filas x nro. cols
+```
+
+```
+#&gt; [1] 19  4
+```
+
+---
+
+
+```r
+head(tab_roc,4)  # cuatro primeras filas
+```
+
+```
+#&gt; # A tibble: 4 x 4
+#&gt;       corte   sen    esp youden
+#&gt;       &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+#&gt; 1 -Inf          1 0      0     
+#&gt; 2    0.0146     1 0.0839 0.0839
+#&gt; 3    0.0229     1 0.140  0.140 
+#&gt; 4    0.0362     1 0.245  0.245
+```
+
+```r
+# Calculando el punto de corte que maximiza la sen y la esp
+p.max &lt;- which.max(tab_roc$youden)
+v.max &lt;- tab_roc[p.max, ]
+v.max
+```
+
+```
+#&gt; # A tibble: 1 x 4
+#&gt;   corte   sen   esp youden
+#&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+#&gt; 1 0.199  0.86 0.692  0.552
+```
+
+---
+
+Gráficando la curva ROC de forma manual desde el resultado del comando `roc` (paquete .orange[pROC])
+
+
+.pull-left[
+
+```r
+ggplot(tab_roc,
+       aes(x = 1-esp, 
+           y = sen)) +
+  geom_line() +
+  geom_abline(intercept = 0, 
+              slope = 1,
+              lty = 2, 
+              size = 0.3) +
+  annotate('point', 
+           color = 'red',
+           x = 1-v.max$esp, 
+           y = v.max$sen)
+```
+
+El punto rojo corresponde al punto de corte (0.199) que maximiza la sensibilidad y especificidad.
+
+]
+
+.pull-right[
+&lt;img src="reg_logist_files/figure-html/unnamed-chunk-58-1.svg" style="display: block; margin: auto;" /&gt;
+]
+
+---
+
+El resultado del comando `roc` (paquete .orange[pROC]) se puede utilizar dentro de `plot` para gráficar la curva ROC con muchas opciones para personalizar el gráfico.
+
+
+.pull-left[
+
+```r
+plot(res_roc, print.auc = T, 
+     print.thres=T, 
+     auc.polygon = T,
+     legacy.axes = T)
+```
+
+El argumento `legacy.axes = F` gráfica el eje X como la especificidad, pero en orden inverso (de 1 a 0), esto hace que el gráfico no cambie.
+
+El paquete .orange[pROC] también cuenta con el comando `ggroc` para realizar el gráfico bajo .orange[ggplot2].
+
+
+]
+
+.pull-right[
+&lt;img src="reg_logist_files/figure-html/unnamed-chunk-60-1.svg" style="display: block; margin: auto;" /&gt;
+]
+
+---
+layout: false
+layout: true
+
+### Área bajo la curva ROC
+
+---
+
+A través de la curva ROC se muestra el poder predictivo y de discriminación del modelo. La forma de hacer esto es a través del **área bajo la curva** ROC (area under curve, AUC).
+
+--
+
+El poder discriminatorio es la capacidad que tiene el modelo de clasificar correctamente a los "sujetos" según su estado respecto a tener o no el evento de interés.
+
+--
+
+El área representada bajo la diagonal (AUC = 0.5) de la curva ROC correspondería a un modelo donde el poder discriminatario es nulo.
+
+--
+
+#### El AUC para el ejemplo
+
+Para el ejemplo, el AUC = 0.85, lo cual indica que el modelo de reg. logística con la talla, zona y época discrimina **bien** los individuos infectados de no infectados y que su poder discriminatrio es del 85%.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
